@@ -34,10 +34,11 @@ setup(name='collective.history',
       zip_safe=False,
       install_requires=[
           'setuptools',
+          'plone.app.dexterity',
           # -*- Extra requirements: -*-
       ],
       extras_require=dict(
-          test=['plone.app.testing', 'pyquery'],
+          test=['plone.app.testing',],
       ),
       entry_points="""
       # -*- Entry points: -*-
