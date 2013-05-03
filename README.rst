@@ -1,7 +1,17 @@
 Introduction
 ============
 
+This addon provides a way to keep track of every actions of every users
+in your site.
 
+When a user do something Zope throw an event that is catch by this addon
+to save the following information:
+
+* the trigger
+* what
+* where
+* when
+* who
 
 How to install
 ==============
