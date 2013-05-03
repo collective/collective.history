@@ -1,0 +1,4 @@
+<layers>
+    <layer name="collective.history"
+           interface="collective.history.layer.Layer" />
+</layers>
