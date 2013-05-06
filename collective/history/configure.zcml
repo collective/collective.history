@@ -8,6 +8,7 @@
     xmlns:plone="http://namespaces.plone.org/plone"
     i18n_domain="collective.history">
 
+  <includeDependencies package="."/>
   <include package=".browser" />
 
   <i18n:registerTranslations directory="locales" />
@@ -25,25 +26,22 @@
       interface=".layer.Layer"
       name="collective.history"
       />
-
-  <!-- EXAMPLE:
-  <browser:viewlet
-      name="collective.someviewlet"
-      manager="plone.app.layout.viewlets.interfaces.IPortalFooter"
-      class=".viewlets.MyViewlet"
-      layer=".interfaces.ILayer"
-      permission="zope2.View"
+  <subscriber
+      for="Products.Archetypes.interfaces.IBaseObject
+           zope.component.interfaces.IObjectEvent"
+      handler=".handler.HandleAction"
       />
-  <include package="plone.app.contentmenu" />
   <browser:page
+      name="collective.history.manager"
       for="*"
-      name="myview"
-      menu="plone_displayviews"
-      title="Galleria"
-      class=".myfile.MyView"
-      layer=".interfaces.ILayer"
-      permission="zope2.View"
+      class=".manager.UserActionManager"
+      permission="zope.Public"
       />
-  -->
+  <browser:page
+      name="collective.history.backend.dexterity"
+      for="*"
+      class=".backend.DexterityBackend"
+      permission="zope.Public"
+      />
 
 </configure>

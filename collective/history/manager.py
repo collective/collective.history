@@ -1,7 +1,16 @@
+#zope
 from zope import component
-from collective.history import backend
+from zope import interface
+from zope import schema
+
+#Zope2
 from Products.Five.browser import BrowserView
+
+#Plone
 from plone.registry.interfaces import IRegistry
+
+#internal
+from collective.history import backend
 
 
 class IUserActionManager(backend.IBackendStorage):
@@ -16,6 +25,8 @@ class IUserActionManager(backend.IBackendStorage):
 
 
 class UserActionManager(BrowserView):
+    interface.implements(IUserActionManager)
+
     def __init__(self, context, request):
         self.context = context  # TODO: change this context to become the portal
         self.request = request
@@ -28,11 +39,20 @@ class UserActionManager(BrowserView):
         if self.backend is None:
             backend = self.registry.get(
                 'collective.history.backend',
-                'default'
+                'collective.history.backend.dexterity'
             )
-            objects = (self.context, self.request)
-            self.backend = component.queryMultiAdapter(
-                objects,
-                interface=backend.IBackendStorage,
-                name=backend
-            )
+            self.backend = self.context.restrictedTraverse(backend)
+            try:
+                self.backend.update()
+            except AttributeError:
+                self.backend = False
+
+    def create(self):
+        if not self.backend:
+            return
+        return self.backend.create()
+
+    def add(self, useraction):
+        if not self.backend:
+            return
+        return self.backend.add(useraction)

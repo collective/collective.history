@@ -35,6 +35,7 @@ setup(name='collective.history',
       install_requires=[
           'setuptools',
           'plone.app.dexterity',
+          'plone.directives.form',
           # -*- Extra requirements: -*-
       ],
       extras_require=dict(

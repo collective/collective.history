@@ -11,6 +11,7 @@
 *.rej
 *.pyc
 *.pyo
+*.mo
 
 # Packages #
 ############
@@ -43,6 +44,7 @@ Thumbs.db
 # Editor backup files #
 #######################
 *~
+*.sw[op]
 
 # Other VCSes #
 ###############
@@ -72,3 +74,4 @@ bin
 parts
 develop-eggs
 var
+src
