@@ -104,7 +104,7 @@ class DexterityBackend(object):
         """
         normalizer = component.getUtility(IIDNormalizer)
 
-        title = "%s" % useraction.when.strftime("%Y-%m-%d-%H-%M-%S-%f")
+        title = "%s" % useraction.when
         title += "-%s" % normalizer.normalize(useraction.who)
         title += "-%s" % useraction.what
         title += "-%s" % useraction.target

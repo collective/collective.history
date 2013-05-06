@@ -1,0 +1,27 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="collective.history">
+
+<body>
+
+<div metal:fill-slot="main">
+    <tal:main-macro metal:define-macro="main">
+
+    <h1 tal:content="context/title"></h1>
+    <ul>
+      <li><span i18n:translate="">What</span>: <span tal:content="context/what"></span></li>
+      <li><span i18n:translate="">When</span>: <span tal:content="context/when"></span></li>
+      <li><a tal:attributes="href string:${context/portal_url}/resolveuid/${context/target}">Where</a></li>
+      <li><span i18n:translate="">Who</span>: <span tal:content="context/who"></span></li>
+    </ul>
+
+
+    </tal:main-macro>
+</div>
+
+</body>
+</html>

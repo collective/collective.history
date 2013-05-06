@@ -17,4 +17,3 @@ class IUserAction(form.Schema):
     who = schema.ASCIILine(title=u"Who")
 
     transactionid = schema.ASCIILine(title=u"Transaction ID")
-
