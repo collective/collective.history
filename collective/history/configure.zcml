@@ -33,9 +33,13 @@
   <subscriber
       for="Products.Archetypes.interfaces.IBaseObject
            zope.component.interfaces.IObjectEvent"
-      handler=".handler.HandleAction"
+      handler=".handler.HandleArchetypesAction"
       />
-
+  <subscriber
+      for="plone.portlets.interfaces.IPortletAssignment
+           zope.component.interfaces.IObjectEvent"
+      handler=".handler.HandlePortletAction"
+      />
   <interface
       interface=".layer.Layer"
       name="collective.history"

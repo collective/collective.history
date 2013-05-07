@@ -9,7 +9,6 @@ Test Teardown  Close all browsers
 *** Test Cases ***
 
 Create content and check history is working
-    Import library  Dialogs
     Log in as site owner
     Go to homepage
     Add folder    My folder

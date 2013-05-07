@@ -20,7 +20,7 @@ class UnrestrictedUser(BaseUnrestrictedUser):
         return self.getUserName()
 
 
-class HandleAction(object):
+class HandleArchetypesAction(object):
     """The handler is in a class to make subtyping easier if needed
     So all the code is in the init because it's called as if it were a method;
 
@@ -36,46 +36,25 @@ class HandleAction(object):
     def __init__(self, context, event):
         self.context = context
         self.event = event
-        self.mtool = getToolByName(self.context, "portal_membership", None)
+        self._mtool = None
+        self._pstate = None
         if self.mtool is None:
             LOG.info("action not kept: context is not content")
             return
-        self.pstate = self.context.restrictedTraverse("plone_portal_state")
         self._security_manager = getSecurityManager()
         self._sudo("Manager")
 
-        #check if we can use history
-        if self._is_temporary():
-            LOG.info('action not kept: is temporary')
-            self._sudo(None)
-            return
-        if self._is_history():
-            LOG.info('action not kept: is history')
-            self._sudo(None)
-            return
-        if not self._is_installed():
-            LOG.info('action not kept: not installed')
+        if not self.constraints_validated():
             self._sudo(None)
             return
 
-        #retrieve info on the event
-        what = event
-        when = datetime.now()
-        who = self.mtool.getAuthenticatedMember().getId()
-        where = '/'.join(context.getPhysicalPath())
-        if IUUIDAware.providedBy(context):
-            target = "%s" % IUUID(context)
-        else:
-            LOG.error("context is not IUUIDAware: %s" % context)
+        manager = self.get_manager()
+        if not manager:
             self._sudo(None)
             return
 
-        #now try to save the useraction
-        try:
-            manager = self.context.restrictedTraverse(VIEW_NAME)
-            manager.update()
-        except AttributeError:
-            LOG.error('action not kept: can t find the manager')
+        info = self.get_useraction_info()
+        if not info:
             self._sudo(None)
             return
 
@@ -84,16 +63,67 @@ class HandleAction(object):
             LOG.error('action not kept: can t create useraction')
             self._sudo(None)
             return
-        useraction.what = what
-        useraction.when = when
-        useraction.who = who
-        useraction.where = where
-        useraction.target = target
+
+        useraction.what = info["what"]
+        useraction.when = info["when"]
+        useraction.who = info["who"]
+        useraction.where = info["where"]
+        useraction.target = info["target"]
+
         if useraction.is_valid_event():
             manager.add(useraction)
         else:
             LOG.info('action not kept: is not a valid event')
         self._sudo(None)
+
+    def get_useraction_info(self):
+        info = {}
+        if IUUIDAware.providedBy(self.context):
+            info["target"] = "%s" % IUUID(self.context)
+        else:
+            LOG.error("context is not IUUIDAware: %s" % self.context)
+            return
+        info["what"] = self.event
+        info["when"] = datetime.now()
+        info["who"] = self.mtool.getAuthenticatedMember().getId()
+        info["where"] = '/'.join(self.context.getPhysicalPath())
+        return info
+
+    def get_manager(self):
+        #now try to save the useraction
+        try:
+            manager = self.context.restrictedTraverse(VIEW_NAME)
+            manager.update()
+        except AttributeError:
+            LOG.error('action not kept: can t find the manager')
+            return
+        return manager
+
+    def constraints_validated(self):
+        if self._is_temporary():
+            LOG.info('action not kept: is temporary')
+            return False
+        if self._is_history():
+            LOG.info('action not kept: is history')
+            return False
+        if not self._is_installed():
+            LOG.info('action not kept: not installed')
+            return False
+        return True
+
+    @property
+    def mtool(self):
+        if self._mtool is None:
+            mtool = "portal_membership"
+            self._mtool = getToolByName(self.context, mtool, None)
+        return self._mtool
+
+    @property
+    def pstate(self):
+        if self._pstate is None:
+            pstate = "plone_portal_state"
+            self._pstate = self.context.restrictedTraverse(pstate)
+        return self._pstate
 
     def _is_temporary(self):
         portal_factory = getToolByName(self.context, 'portal_factory')
@@ -129,3 +159,7 @@ class HandleAction(object):
         else:
             #back to the security manager in the init
             setSecurityManager(self._security_manager)
+
+
+class HandlePortletAction(HandleArchetypesAction):
+    pass
