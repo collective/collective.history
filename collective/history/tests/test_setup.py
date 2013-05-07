@@ -8,10 +8,23 @@ class TestSetup(base.IntegrationTestCase):
     """
 
     def test_browserlayer(self):
-        self.assertTrue(True)
+        from plone.browserlayer import utils
+        from collective.history import layer
+        self.assertIn(layer.Layer, utils.registered_layers())
 
     def test_types(self):
-        self.assertTrue(True)
+        types = self.layer['portal'].portal_types
+        _type = 'collective.history.useraction'
+        actions = types.listActions(object=_type)
+        self.assertIsNotNone(actions)
+
+    def test_upgrades(self):
+        profile = 'collective.history:default'
+        setup = self.layer['portal'].portal_setup
+        upgrades = setup.listUpgrades(profile, show_old=True)
+        self.assertTrue(len(upgrades) > 0)
+        for upgrade in upgrades:
+            upgrade['step'].doStep(setup)
 
 
 def test_suite():
