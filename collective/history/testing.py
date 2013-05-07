@@ -1,7 +1,6 @@
 from plone.app.testing import PloneSandboxLayer
 from plone.app.testing import PLONE_FIXTURE
 from plone.app.testing import IntegrationTesting, FunctionalTesting
-from plone.app.testing import PLONE_SITE_ID
 from plone.app.robotframework.testing import AUTOLOGIN_LIBRARY_FIXTURE
 
 from plone.testing import z2

@@ -162,4 +162,13 @@ class HandleArchetypesAction(object):
 
 
 class HandlePortletAction(HandleArchetypesAction):
-    pass
+    def get_context(self):
+        #TOOD: find a way to retrive the real context
+        return None
+
+    @property
+    def mtool(self):
+        if self._mtool is None:
+            mtool = "portal_membership"
+            self._mtool = getToolByName(self.get_context(), mtool, None)
+        return self._mtool
