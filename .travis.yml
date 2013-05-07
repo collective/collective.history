@@ -22,8 +22,9 @@ env:
 #  - npm install jshint -g
 #
 # robotframework or selenium
-#  - export DISPLAY=:99.0
-#  - sh -e /etc/init.d/xvfb start
+
+  - export DISPLAY=:99.0
+  - sh -e /etc/init.d/xvfb start
 
 install:
   - mkdir -p buildout-cache/eggs
