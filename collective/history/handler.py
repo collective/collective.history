@@ -21,6 +21,18 @@ class UnrestrictedUser(BaseUnrestrictedUser):
 
 
 class HandleAction(object):
+    """The handler is in a class to make subtyping easier if needed
+    So all the code is in the init because it's called as if it were a method;
+
+    the responsability of the handler:
+    * pre filter all non needed events like history / temporary stuff
+    * sudo the current user to let anybody has write access during the
+    execution of this handler (then close the sudo)
+    * call the useraction manager
+    * ask the manager to create a new useraction
+    * fill the data of the useraction
+    * save the useraction using it's manager
+    """
     def __init__(self, context, event):
         self.context = context
         self.event = event
@@ -107,7 +119,6 @@ class HandleAction(object):
         if role is not None:
             if self.mtool.getAuthenticatedMember().has_role(role):
                 return
-            # http://developer.plone.org/security/permissions.html#bypassing-permission-checks
             sm = getSecurityManager()
             acl_users = getToolByName(self.context, 'acl_users')
             tmp_user = UnrestrictedUser(

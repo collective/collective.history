@@ -1,7 +1,11 @@
 ## setuphandlers.py
+import logging
 
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.interfaces.constrains import ISelectableConstrainTypes
+
+
+LOG = logging.getLogger("collective.history")
 
 
 def setupVarious(context):
@@ -24,11 +28,11 @@ def setupVarious(context):
 
 def _createObjects(parent, new_object):
 
-    parent.plone_log("Creating %s in %s" % (new_object, parent))
+    LOG.info("Creating %s in %s" % (new_object, parent))
 
     existing = parent.objectIds()
     if new_object['id'] in existing:
-        parent.plone_log("%s exists, skipping" % new_object['id'])
+        LOG.info("%s exists, skipping" % new_object['id'])
     else:
         _createObjectByType(
             new_object['type'],
@@ -36,15 +40,15 @@ def _createObjects(parent, new_object):
             id=new_object['id'],
             title=new_object['title']
         )
-    parent.plone_log("Now to modify the new_object...")
+    LOG.info("Now to modify the new_object...")
 
     obj = parent.get(new_object['id'], None)
     if obj is None:
         msg = "can't get new_object %s to modify it!" % new_object['id']
-        parent.plone_log(msg)
+        LOG.info(msg)
     else:
         if obj.Type() != new_object['type']:
-            parent.plone_log("types don't match!")
+            LOG.info("types don't match!")
         else:
             if 'layout' in new_object:
                 obj.setLayout(new_object['layout'])

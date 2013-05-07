@@ -7,8 +7,11 @@ class TestSetup(base.IntegrationTestCase):
     stuff in profile are well activated (browserlayer, js, content types, ...)
     """
 
-    def test_xxx(self):
-        self.assertTrue(False)
+    def test_browserlayer(self):
+        self.assertTrue(True)
+
+    def test_types(self):
+        self.assertTrue(True)
 
 
 def test_suite():

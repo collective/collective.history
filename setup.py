@@ -40,7 +40,7 @@ setup(name='collective.history',
           # -*- Extra requirements: -*-
       ],
       extras_require=dict(
-          test=['plone.app.testing'],
+          test=['plone.app.testing', 'plone.app.robotframework'],
       ),
       entry_points="""
       # -*- Entry points: -*-

@@ -1,11 +1,9 @@
 import logging
-from datetime import datetime
 
 from zope import component
 from zope import interface
 
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.interfaces.constrains import ISelectableConstrainTypes
 
 from plone.dexterity.utils import createContent
 
@@ -98,11 +96,6 @@ class DexterityBackend(object):
     def create(self):
         if not self.isReady:
             return
-#        suffix = "%s" % int(random()*10000)
-#        dt = datetime.now().strftime('%Y%m%d%H%M%f')
-#        newid = dt + suffix
-#        type_info = self._portal_types.getTypeInfo(TYPE_NAME)
-#        useraction = type_info._constructInstance(self.container, newid)
         useraction = createContent(TYPE_NAME)
         return UserActionWrapper(useraction, self)
 
@@ -116,7 +109,8 @@ class DexterityBackend(object):
             delete = True
         if useraction.what == "EditBegun":
             delete = True
-        if delete:
+        if not delete:
+            return useraction
+        else:
             del useraction
             return
-        return useraction

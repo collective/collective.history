@@ -17,7 +17,6 @@ from zope.lifecycleevent.interfaces import IObjectCopiedEvent, IObjectAddedEvent
     IObjectMovedEvent, IObjectRemovedEvent
 from Products.CMFCore.interfaces._events import IActionSucceededEvent
 from Products.DCWorkflow.interfaces import ITransitionEvent
-from plone.schemaeditor.utils import SchemaModifiedEvent
 from plone.registry.interfaces import IRecordModifiedEvent
 
 
