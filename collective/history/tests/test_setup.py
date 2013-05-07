@@ -1,5 +1,6 @@
 import unittest2 as unittest
 from collective.history.tests import base
+from Products.CMFPlone.interfaces.constrains import ISelectableConstrainTypes
 
 
 class TestSetup(base.IntegrationTestCase):
@@ -25,6 +26,15 @@ class TestSetup(base.IntegrationTestCase):
         self.assertTrue(len(upgrades) > 0)
         for upgrade in upgrades:
             upgrade['step'].doStep(setup)
+
+    def test_setuphandler(self):
+        self.assertIn('portal_history', self.layer['portal'].objectIds())
+        history = self.layer['portal'].portal_history
+        self.assertEqual(history.getLayout(), 'collective_history_view')
+        aspect = ISelectableConstrainTypes(history)
+        addable = aspect.getImmediatelyAddableTypes()
+        type_name = "collective.history.useraction"
+        self.assertIn(type_name, addable)
 
 
 def test_suite():
