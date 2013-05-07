@@ -36,10 +36,11 @@ setup(name='collective.history',
           'setuptools',
           'plone.app.dexterity',
           'plone.directives.form',
+          'collective.js.datatables',
           # -*- Extra requirements: -*-
       ],
       extras_require=dict(
-          test=['plone.app.testing',],
+          test=['plone.app.testing'],
       ),
       entry_points="""
       # -*- Entry points: -*-

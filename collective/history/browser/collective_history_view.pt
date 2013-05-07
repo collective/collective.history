@@ -1,0 +1,53 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="collective.history">
+
+<body>
+<metal:override fill-slot="top_slot"
+    tal:define="disable_column_one python:request.set('disable_plone.leftcolumn',1);
+                disable_column_two python:request.set('disable_plone.rightcolumn',1);"/>
+
+<div metal:fill-slot="main"
+     tal:define="context_url string:${context/absolute_url};">
+    <tal:main-macro metal:define-macro="main">
+
+    <h1 tal:content="context/title"></h1>
+
+    <table id="history">
+      <thead>
+        <tr>
+            <th i18n:translate="">When</th>
+            <th i18n:translate="">What</th>
+            <th i18n:translate="">Where</th>
+            <th i18n:translate="">More</th>
+        </tr>
+      </thead>
+      <tbody>
+      <tal:def tal:repeat="brain context/getFolderContents">
+        <tr tal:define="useraction brain/getObject">
+          <td tal:content="python:useraction.when.strftime('%Y-%m-%d %H:%M:%S')"></td>
+          <td tal:content="useraction/what"></td>
+          <td tal:content="useraction/where"></td>
+          <td><a tal:attributes="href string:${context_url}/${useraction/id}" i18n:translate="">more</a></td>
+        </tr>
+      </tal:def>
+      </tbody>
+    </table>
+<script type="text/javascript" charset="utf-8">
+$(document).ready(function() {
+    $('#history').dataTable({
+     "oLanguage": {
+         "sUrl": "@@collective.js.datatables.translation"
+      }
+    });
+ });
+</script>
+    </tal:main-macro>
+</div>
+
+</body>
+</html>

@@ -1,19 +1,18 @@
+import logging
 from datetime import datetime
-from random import random
 
 from zope import component
 from zope import interface
 
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.interfaces.siteroot import IPloneSiteRoot
 from Products.CMFPlone.interfaces.constrains import ISelectableConstrainTypes
 
 from plone.dexterity.utils import createContent
-from plone.i18n.normalizer.interfaces import IIDNormalizer
 
-from plone.app.layout.navigation.interfaces import INavigationRoot
-from plone.app.dexterity.behaviors.exclfromnav import IExcludeFromNavigation
-from plone.app.dexterity.behaviors.metadata import IBasic
+from collective.history.useraction import UserActionWrapper
+
+
+LOG = logging.getLogger("collective.history")
 
 
 class IBackendStorage(interface.Interface):
@@ -36,6 +35,7 @@ TYPE_NAME = "collective.history.useraction"
 
 
 class DexterityBackend(object):
+
     def __init__(self, context, request):
         self.context = context
         self.request = request
@@ -59,10 +59,25 @@ class DexterityBackend(object):
         if self._portal_types is None:
             self._portal_types = getToolByName(self.context, "portal_types")
 
-    def add(self, useraction):
+    def add(self, useraction_wrapper):
         if not self.isReady:
             return
-        self._update_action(useraction)
+        useraction_wrapper.update_before_add()
+        useraction = useraction_wrapper.context
+        useraction = self._filter(useraction)
+        if not useraction:
+            return
+        action_id = useraction.id
+        action_ids = self.container.objectIds()
+
+        if action_id in action_ids:
+            action_id += "-1"
+            indice = 1
+            while action_id + "-%s" % indice in action_ids:
+                indice += 1
+            new_id = action_id + "-%s" % indice
+            useraction.id = new_id
+
         self.container[useraction.id] = useraction
 
     def rm(self, useraction_id):
@@ -89,25 +104,28 @@ class DexterityBackend(object):
 #        type_info = self._portal_types.getTypeInfo(TYPE_NAME)
 #        useraction = type_info._constructInstance(self.container, newid)
         useraction = createContent(TYPE_NAME)
-        return useraction
+        return UserActionWrapper(useraction, self)
 
     def _check_container(self):
         aspect = ISelectableConstrainTypes(self.container)
         if TYPE_NAME not in aspect.getImmediatelyAddableTypes():
-            aspect.setConstrainTypesMode(1)  #select manually
+            aspect.setConstrainTypesMode(1)  # select manually
             aspect.setImmediatelyAddableTypes([TYPE_NAME])
+        if self.container.getLayout() != "collective_history_view":
+            self.container.setLayout("collective_history_view")
         self.isReady = True
 
-    def _update_action(self, useraction):
-        """set title and id to be as friendly as possible
-        when-who-what-where
-        """
-        normalizer = component.getUtility(IIDNormalizer)
-
-        title = "%s" % useraction.when
-        title += "-%s" % normalizer.normalize(useraction.who)
-        title += "-%s" % useraction.what
-        title += "-%s" % useraction.target
-
-        useraction.setTitle(title)
-        useraction.id = title
+    def _filter(self, useraction):
+        """delete the user action and return None
+        if this one should not be kept"""
+        delete = False
+        if "Before" in useraction.what:
+            delete = True
+        if "WillBe" in useraction.what:
+            delete = True
+        if useraction.what == "EditBegun":
+            delete = True
+        if delete:
+            del useraction
+            return
+        return useraction

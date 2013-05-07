@@ -22,14 +22,17 @@
       />
   <include file="upgrades.zcml" />
 
-  <interface
-      interface=".layer.Layer"
-      name="collective.history"
-      />
-  <subscriber
+  <!-- let subscribe to all event send by zope on all archetypes content -->
+
+   <subscriber
       for="Products.Archetypes.interfaces.IBaseObject
            zope.component.interfaces.IObjectEvent"
       handler=".handler.HandleAction"
+      />
+
+  <interface
+      interface=".layer.Layer"
+      name="collective.history"
       />
   <browser:page
       name="collective.history.manager"
