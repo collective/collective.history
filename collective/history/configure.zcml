@@ -21,10 +21,16 @@
       provides="Products.GenericSetup.interfaces.EXTENSION"
       />
   <include file="upgrades.zcml" />
+  <genericsetup:importStep
+       name="collective.history"
+       title="collective.history"
+       description=""
+       handler="collective.history.setuphandler.setupVarious">
+     <depends name="typeinfo"/>
+  </genericsetup:importStep>
 
   <!-- let subscribe to all event send by zope on all archetypes content -->
-
-   <subscriber
+  <subscriber
       for="Products.Archetypes.interfaces.IBaseObject
            zope.component.interfaces.IObjectEvent"
       handler=".handler.HandleAction"

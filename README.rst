@@ -7,7 +7,6 @@ in your site.
 When a user do something Zope throw an event that is catch by this addon
 to save the following information:
 
-* the trigger
 * what
 * where
 * when

@@ -55,9 +55,9 @@ class DexterityBackend(object):
         if self.container is None:
             portal = self.portal_state.portal()
             self.container = portal.portal_history
-            self._check_container()
         if self._portal_types is None:
             self._portal_types = getToolByName(self.context, "portal_types")
+        self.isReady = True
 
     def add(self, useraction_wrapper):
         if not self.isReady:
@@ -105,15 +105,6 @@ class DexterityBackend(object):
 #        useraction = type_info._constructInstance(self.container, newid)
         useraction = createContent(TYPE_NAME)
         return UserActionWrapper(useraction, self)
-
-    def _check_container(self):
-        aspect = ISelectableConstrainTypes(self.container)
-        if TYPE_NAME not in aspect.getImmediatelyAddableTypes():
-            aspect.setConstrainTypesMode(1)  # select manually
-            aspect.setImmediatelyAddableTypes([TYPE_NAME])
-        if self.container.getLayout() != "collective_history_view":
-            self.container.setLayout("collective_history_view")
-        self.isReady = True
 
     def _filter(self, useraction):
         """delete the user action and return None

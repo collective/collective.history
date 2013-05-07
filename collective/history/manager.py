@@ -35,7 +35,9 @@ class UserActionManager(BrowserView):
 
     def update(self):
         if self.registry is None:
-            self.registry = component.getUtility(IRegistry)
+            self.registry = component.queryUtility(IRegistry)
+            if self.registry is None:
+                return
         if self.backend is None:
             backend = self.registry.get(
                 'collective.history.backend',
