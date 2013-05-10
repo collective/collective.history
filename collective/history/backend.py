@@ -7,8 +7,6 @@ from Products.CMFCore.utils import getToolByName
 
 from plone.dexterity.utils import createContent
 
-from collective.history.useraction import UserActionWrapper
-
 
 LOG = logging.getLogger("collective.history")
 
@@ -97,7 +95,7 @@ class DexterityBackend(object):
         if not self.isReady:
             return
         useraction = createContent(TYPE_NAME)
-        return UserActionWrapper(useraction, self)
+        return useraction
 
     def _filter(self, useraction):
         """delete the user action and return None

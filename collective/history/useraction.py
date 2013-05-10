@@ -11,13 +11,15 @@ from plone.directives import form
 from plone.i18n.normalizer.interfaces import IIDNormalizer
 from Products.Archetypes.interfaces.event import IObjectEditedEvent,\
     IObjectInitializedEvent
-from plone.uuid.interfaces import IUUID
+from plone.uuid.interfaces import IUUID, IUUIDAware
 from plone.app.controlpanel.interfaces import IConfigurationChangedEvent
 from zope.lifecycleevent.interfaces import IObjectCopiedEvent, IObjectAddedEvent,\
     IObjectMovedEvent, IObjectRemovedEvent
 from Products.CMFCore.interfaces._events import IActionSucceededEvent
-from Products.DCWorkflow.interfaces import ITransitionEvent
+from Products.DCWorkflow.interfaces import ITransitionEvent,\
+    IAfterTransitionEvent
 from plone.registry.interfaces import IRecordModifiedEvent
+from Products.CMFCore.utils import getToolByName
 
 
 LOG = logging.getLogger("collective.history")
@@ -29,39 +31,33 @@ class IUserAction(form.Schema):
     what = schema.ASCIILine(title=u"What")
     when = schema.Datetime(title=u"When")
     where = schema.ASCIILine(title=u"Where")
+    where_uid = schema.ASCIILine(title=u"Where UID")
     who = schema.ASCIILine(title=u"Who")
     what_info = schema.TextLine(title=u"What more info")
     transactionid = schema.ASCIILine(title=u"Transaction ID")
 
 
-class UserActionWrapper(object):
+class BaseUserActionWrapper(object):
     """User action wrapper of the dexterity object"""
 
-    def __init__(self, context, manager):
+    def __init__(self, context):
         self.context = context
-        self.manager = manager
+        self.event = None
 
     def set_what(self, value):
-        if self.what is not None:
-            LOG.error("try to set multiple time the what ?")
-            return
         if IObjectEvent.providedBy(value):
-            self.context.what_info = self.get_what_info(value)
-            ifaces = list(interface.implementedBy(value.__class__))
-            for iface in ifaces:
-                if iface.extends(IObjectEvent):
-                    self.what = str(iface.__identifier__)
-                    break
-
-        elif type(value) == str:
-            new_value = value.split('.')[-1]
-            if new_value.startswith('I'):
-                new_value = new_value[1:]
-            if new_value.startswith('Object'):
-                new_value = new_value[6:]
-            if new_value.endswith('Event'):
-                new_value = new_value[:-5]
-            self.context.what = new_value
+            self.event = value
+            what, what_info = self.get_what_info(value)
+            self.context.what_info = what_info
+            if what is not None:
+                self.context.what = what
+            else:
+                ifaces = list(interface.implementedBy(value.__class__))
+                for iface in ifaces:
+                    if iface.extends(IObjectEvent):
+                        iface_id = str(iface.__identifier__)
+                        self.context.what = iface_id
+                        break
 
     def get_what(self):
         return self.context.what
@@ -78,7 +74,12 @@ class UserActionWrapper(object):
     when = property(get_when, set_when)
 
     def set_where(self, value):
-        self.context.where = value
+        if hasattr(value, 'getPhysicalPath'):
+            self.context.where = '/'.join(value.getPhysicalPath())
+        if IUUIDAware.providedBy(value):
+            self.context.where_uid = IUUID(value)
+        if type(value) == str:
+            self.context.where = value
 
     def get_where(self, value):
         return self.context.where
@@ -117,47 +118,10 @@ class UserActionWrapper(object):
         who = self.context.who
 #        info = (what, when, where, who)
 #        LOG.info("what: %s; when: %s; where: %s; who: %s" % info)
-        return what and when and where and who
+        return bool(what and when and where and who)
 
     def get_what_info(self, event):
-        #Archetypes
-        if IObjectEditedEvent.providedBy(event):
-            return self.get_object_modified_info(event)
-        elif IObjectInitializedEvent.providedBy(event):
-            return self.get_object_modified_info(event)
-        #plone
-        elif IConfigurationChangedEvent.providedBy(event):
-            return self.get_configuration_changed_info(event)
-#        #plone.app.form (formlib)
-#        elif IEditSavedEvent.providedBy(event):
-#            return 'editsaved'
-#        #plone.app.iterate
-#        elif ICheckinEvent.providedBy(event):
-#            return 'checkedin'
-#        elif ICheckoutEvent.providedBy(event):
-#            return 'checkedout'
-#        elif IWorkingCopyDeletedEvent.providedBy(event):
-#            return 'workingcopydeleted'
-#        #plone.app.registry
-        elif IRecordModifiedEvent.providedBy(event):
-            return self.get_record_modified_info(event)
-        # DCWorkflow
-        elif ITransitionEvent.providedBy(event):
-            return self.get_transition_info(event)
-        # CMFCore
-        elif IActionSucceededEvent.providedBy(event):
-            return self.get_action_succeed_info(event)
-        # zope
-        elif IObjectCopiedEvent.providedBy(event):
-            return self.get_object_copied_info(event)
-        elif IObjectMovedEvent.providedBy(event):
-            return self.get_object_moved_info(event)
-        elif IObjectAddedEvent.providedBy(event):
-            return self.get_object_moved_info(event)
-        elif IObjectRemovedEvent.providedBy(event):
-            return self.get_object_moved_info(event)
-#        elif IObjectModifiedEvent.providedBy(event):
-#            return 'modified'
+        raise NotImplementedError
 
     def get_object_modified_info(self, event):
         if event.descriptions:
@@ -237,3 +201,88 @@ class UserActionWrapper(object):
             info["newValue"] = event.newValue
         if info:
             return json.dumps(info)
+
+    def get_what_from_event(self, str_event_iface):
+        raise NotImplementedError
+
+
+class PloneSiteUserActionWrapper(BaseUserActionWrapper):
+    def get_what_info(self, event):
+        #plone
+        if IConfigurationChangedEvent.providedBy(event):
+            return 'configuration', self.get_configuration_changed_info(event)
+#        #plone.app.form (formlib)
+#        elif IEditSavedEvent.providedBy(event):
+#            return 'editsaved'
+#        #plone.app.registry
+        elif IRecordModifiedEvent.providedBy(event):
+            return 'registry', self.get_record_modified_info(event)
+
+
+class ArchetypesUserActionWrapper(BaseUserActionWrapper):
+    """This is an archetypes specialized wrapper of useraction"""
+    def get_what_info(self, event):
+        #Archetypes
+        if IObjectInitializedEvent.providedBy(event):
+            return 'created', self.get_object_modified_info(event)
+        elif IObjectEditedEvent.providedBy(event):
+            return 'edited', self.get_object_modified_info(event)
+#        #TODO: plone.app.iterate
+#        elif ICheckinEvent.providedBy(event):
+#            return 'checkedin'
+#        elif ICheckoutEvent.providedBy(event):
+#            return 'checkedout'
+#        elif IWorkingCopyDeletedEvent.providedBy(event):
+#            return 'workingcopydeleted'
+        # DCWorkflow
+        elif IAfterTransitionEvent.providedBy(event):
+            return 'statechanged', self.get_transition_info(event)
+        # CMFCore (useless)
+#        elif IActionSucceededEvent.providedBy(event):
+#            return None
+#            return 'statechanged', self.get_action_succeed_info(event)
+        # zope
+#        elif IObjectAddedEvent.providedBy(event):
+#            return 'added', self.get_object_moved_info(event)
+        elif IObjectCopiedEvent.providedBy(event):
+            return 'copied', self.get_object_copied_info(event)
+        elif IObjectMovedEvent.providedBy(event):
+            return 'moved', self.get_object_moved_info(event)
+        elif IObjectRemovedEvent.providedBy(event):
+            return 'deleted', self.get_object_moved_info(event)
+#        elif IObjectModifiedEvent.providedBy(event):
+#            return 'modified'
+        else:
+            #TODO: provide a query component to let addon register things
+            pass
+        return None, {}
+
+    def is_valid_event(self):
+        blacklist = (
+            'Products.Archetypes.interfaces.event.IEditBegunEvent',
+            'Products.CMFCore.interfaces._events.IActionSucceededEvent',
+            'zope.lifecycleevent.interfaces.IObjectCreatedEvent',
+            'zope.lifecycleevent.interfaces.IObjectAddedEvent',
+            'zope.lifecycleevent.interfaces.IObjectModifiedEvent',
+        )
+        for iface in blacklist:
+            if self.what == iface:
+                return False
+        # do not keep moved event from the add process
+        if self.what == 'moved':
+            plone_tool = getToolByName(self.event.object, 'plone_utils')
+            newName = self.event.newName
+            oldName = self.event.oldName
+            if newName and plone_tool.isIDAutoGenerated(self.event.newName):
+                return False
+            if oldName and plone_tool.isIDAutoGenerated(self.event.oldName):
+                return False
+            #remove is moved ... kinda weird, let's fix it:
+            if not newName:
+                self.context.what = 'deleted'
+        # do not keep dcworkflow initialization
+        if self.what == 'statechanged':
+            if self.event.old_state == self.event.new_state:
+                return False
+        validated = super(ArchetypesUserActionWrapper, self).is_valid_event()
+        return validated

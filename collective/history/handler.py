@@ -5,6 +5,8 @@ from Products.CMFCore.utils import getToolByName
 from AccessControl.SecurityManagement import newSecurityManager,\
     getSecurityManager, setSecurityManager
 from AccessControl.User import UnrestrictedUser as BaseUnrestrictedUser
+from collective.history.useraction import ArchetypesUserActionWrapper
+from Products.CMFCore.interfaces._events import IActionSucceededEvent
 
 
 VIEW_NAME = '@@collective.history.manager'
@@ -33,6 +35,8 @@ class HandleArchetypesAction(object):
     * fill the data of the useraction
     * save the useraction using it's manager
     """
+    wrapper_class = ArchetypesUserActionWrapper
+
     def __init__(self, context, event):
         self.context = context
         self.event = event
@@ -50,11 +54,13 @@ class HandleArchetypesAction(object):
 
         manager = self.get_manager()
         if not manager:
+            LOG.error('action not kept: no manager')
             self._sudo(None)
             return
 
         info = self.get_useraction_info()
         if not info:
+            LOG.error('action not kept: no info')
             self._sudo(None)
             return
 
@@ -63,6 +69,8 @@ class HandleArchetypesAction(object):
             LOG.error('action not kept: can t create useraction')
             self._sudo(None)
             return
+        #wrapper specialized for Archetypes
+        useraction = self.wrapper_class(useraction)
 
         useraction.what = info["what"]
         useraction.when = info["when"]
@@ -74,6 +82,7 @@ class HandleArchetypesAction(object):
             manager.add(useraction)
         else:
             LOG.info('action not kept: is not a valid event')
+            #del useraction.context
         self._sudo(None)
 
     def get_useraction_info(self):
@@ -86,7 +95,7 @@ class HandleArchetypesAction(object):
         info["what"] = self.event
         info["when"] = datetime.now()
         info["who"] = self.mtool.getAuthenticatedMember().getId()
-        info["where"] = '/'.join(self.context.getPhysicalPath())
+        info["where"] = self.context
         return info
 
     def get_manager(self):
@@ -159,16 +168,3 @@ class HandleArchetypesAction(object):
         else:
             #back to the security manager in the init
             setSecurityManager(self._security_manager)
-
-
-class HandlePortletAction(HandleArchetypesAction):
-    def get_context(self):
-        #TOOD: find a way to retrive the real context
-        return None
-
-    @property
-    def mtool(self):
-        if self._mtool is None:
-            mtool = "portal_membership"
-            self._mtool = getToolByName(self.get_context(), mtool, None)
-        return self._mtool

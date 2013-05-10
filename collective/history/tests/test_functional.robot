@@ -14,16 +14,14 @@ Create content and check history is working
     Add folder    My folder
     Add document    Test document
     Workflow Publish
+    Rename Content Title    test-document  New document title
+    Remove Content    test-document
     Go to history
-    Verify history    1   Created      /folder
-    Verify history    4   Moved        /my-folder
-    Verify history    5   Initialized  /my-folder
-    Verify history    6   Created      /document
-    Verify history    9   Moved        /test-document
-    Verify history    10  Initialized  /test-document
-    Click Link    history_next
-    Verify history    1   AfterTransition  /test-document
-    Verify history    2   ActionSucceeded  /test-document
+    Verify history    1   created       /my-folder
+    Verify history    2   created       /test-document
+    Verify history    3   statechanged  /test-document
+    Verify history    4   moved         /test-document
+    Verify history    5   deleted       /test-document
 
 *** Keywords ***
 
