@@ -52,7 +52,8 @@ class BaseUserActionWrapper(object):
         if IObjectEvent.providedBy(value):
             self.event = value
             what, what_info = self.extract_what()
-            self.data["what_info"] = what_info
+            if what_info is not None:
+                self.data["what_info"] = what_info
             if what is not None:
                 self.data["what"] = what
             else:
@@ -130,7 +131,11 @@ class BaseUserActionWrapper(object):
         return bool(what and when and where and who)
 
     def extract_what(self):
-        raise NotImplementedError
+        """Return (what, what_info) from self.event
+        what is supposed to be a string
+        what_info is either a dict or a json string
+        """
+        return None, {}
 
     def get_object_modified_info(self):
         if self.event.descriptions:
@@ -210,9 +215,6 @@ class BaseUserActionWrapper(object):
             info["newValue"] = self.event.newValue
         if info:
             return json.dumps(info)
-
-    def get_what_from_event(self, str_event_iface):
-        raise NotImplementedError
 
     @property
     def title(self):

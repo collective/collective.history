@@ -5,6 +5,7 @@ from zope.lifecycleevent.interfaces import (
     IObjectCopiedEvent,
     IObjectMovedEvent,
     IObjectRemovedEvent,
+    IObjectModifiedEvent
 )
 from Products.Archetypes.interfaces.event import (
     IObjectEditedEvent,
@@ -14,7 +15,6 @@ from Products.Archetypes.interfaces.event import (
 from Products.DCWorkflow.interfaces import (
     IAfterTransitionEvent,
 )
-
 
 from collective.history.useraction import BaseUserActionWrapper
 from collective.history.handler import BaseHandler
@@ -55,8 +55,8 @@ class ArchetypesUserActionWrapper(BaseUserActionWrapper):
             return 'moved', self.get_object_moved_info()
         elif IObjectRemovedEvent.providedBy(self.event):
             return 'deleted', self.get_object_moved_info()
-#        elif IObjectModifiedEvent.providedBy(self.event):
-#            return 'modified'
+        elif IObjectModifiedEvent.providedBy(self.event):
+            return 'modified', self.get_object_modified_info()
         else:
             #TODO: provide a query component to let addon register things
             pass
@@ -72,7 +72,7 @@ class ArchetypesUserActionWrapper(BaseUserActionWrapper):
             'Products.DCWorkflow.interfaces.IBeforeTransitionEvent',
             'zope.lifecycleevent.interfaces.IObjectCreatedEvent',
             'zope.lifecycleevent.interfaces.IObjectAddedEvent',
-            'zope.lifecycleevent.interfaces.IObjectModifiedEvent',
+#            'zope.lifecycleevent.interfaces.IObjectModifiedEvent',
         )
         for iface in blacklist:
             if self.what == iface:

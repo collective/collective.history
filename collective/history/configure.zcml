@@ -35,6 +35,12 @@
            zope.component.interfaces.IObjectEvent"
       handler=".archetypes.HandleArchetypesUserAction"
       />
+  <!-- add support for rename of content in ploneiste root -->
+  <subscriber
+      for="Products.CMFPlone.interfaces.siteroot.IPloneSiteRoot
+           zope.lifecycleevent.interfaces.IObjectMovedEvent"
+      handler=".archetypes.HandleArchetypesUserAction"
+      />
 
   <subscriber
       for="plone.app.controlpanel.interfaces.IConfigurationChangedEvent"
