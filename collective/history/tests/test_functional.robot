@@ -20,6 +20,8 @@ Create content and check history is working
     Verify history    1   created       /my-folder
     Verify history    2   created       /test-document
     Verify history    3   statechanged  /test-document
+    Import library  Dialogs
+    Pause execution
     Verify history    4   moved         /test-document
     Verify history    5   deleted       /test-document
 

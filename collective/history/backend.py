@@ -6,6 +6,7 @@ from zope import interface
 from Products.CMFCore.utils import getToolByName
 
 from plone.dexterity.utils import createContent
+from plone.i18n.normalizer.interfaces import IIDNormalizer
 
 
 LOG = logging.getLogger("collective.history")
@@ -58,11 +59,10 @@ class DexterityBackend(object):
     def add(self, useraction_wrapper):
         if not self.isReady:
             return
-        useraction_wrapper.update_before_add()
-        useraction = useraction_wrapper.context
-        useraction = self._filter(useraction)
+        useraction = self.create()
         if not useraction:
             return
+        self.update_useraction(useraction_wrapper, useraction)
         action_id = useraction.id
         action_ids = self.container.objectIds()
 
@@ -75,6 +75,18 @@ class DexterityBackend(object):
             useraction.id = new_id
 
         self.container[useraction.id] = useraction
+
+    def update_useraction(self, original, target):
+
+        target.what = original.what
+        target.what_info = original.what_info
+        target.when = original.when
+        target.where = original.where
+        target.who = original.who
+        target.target = original.target
+        target.id = original.id
+        target.setTitle(original.title)
+        return target
 
     def rm(self, useraction_id):
         if not self.isReady:
@@ -96,19 +108,3 @@ class DexterityBackend(object):
             return
         useraction = createContent(TYPE_NAME)
         return useraction
-
-    def _filter(self, useraction):
-        """delete the user action and return None
-        if this one should not be kept"""
-        delete = False
-        if "Before" in useraction.what:
-            delete = True
-        if "WillBe" in useraction.what:
-            delete = True
-        if useraction.what == "EditBegun":
-            delete = True
-        if not delete:
-            return useraction
-        else:
-            del useraction
-            return

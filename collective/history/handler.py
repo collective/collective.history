@@ -1,12 +1,12 @@
 import logging
 from datetime import datetime
-from plone.uuid.interfaces import IUUID, IUUIDAware
 from Products.CMFCore.utils import getToolByName
 from AccessControl.SecurityManagement import newSecurityManager,\
     getSecurityManager, setSecurityManager
 from AccessControl.User import UnrestrictedUser as BaseUnrestrictedUser
-from collective.history.useraction import ArchetypesUserActionWrapper
-from Products.CMFCore.interfaces._events import IActionSucceededEvent
+from collective.history.useraction import ConfigurationUserActionWrapper
+from zope.traversing.interfaces import BeforeTraverseEvent
+from zope.component._api import getSiteManager
 
 
 VIEW_NAME = '@@collective.history.manager'
@@ -22,7 +22,7 @@ class UnrestrictedUser(BaseUnrestrictedUser):
         return self.getUserName()
 
 
-class HandleArchetypesAction(object):
+class BaseHandler(object):
     """The handler is in a class to make subtyping easier if needed
     So all the code is in the init because it's called as if it were a method;
 
@@ -30,12 +30,13 @@ class HandleArchetypesAction(object):
     * pre filter all non needed events like history / temporary stuff
     * sudo the current user to let anybody has write access during the
     execution of this handler (then close the sudo)
-    * call the useraction manager
+    * get a specialized useraction
+    * initialize it
+    * get the useraction manager
     * ask the manager to create a new useraction
-    * fill the data of the useraction
-    * save the useraction using it's manager
+    * save the useraction using the manager
     """
-    wrapper_class = ArchetypesUserActionWrapper
+    wrapper_class = None
 
     def __init__(self, context, event):
         self.context = context
@@ -58,45 +59,16 @@ class HandleArchetypesAction(object):
             self._sudo(None)
             return
 
-        info = self.get_useraction_info()
-        if not info:
-            LOG.error('action not kept: no info')
-            self._sudo(None)
-            return
-
-        useraction = manager.create()
-        if not useraction:
-            LOG.error('action not kept: can t create useraction')
-            self._sudo(None)
-            return
-        #wrapper specialized for Archetypes
-        useraction = self.wrapper_class(useraction)
-
-        useraction.what = info["what"]
-        useraction.when = info["when"]
-        useraction.who = info["who"]
-        useraction.where = info["where"]
-        useraction.target = info["target"]
+        useraction = self.wrapper_class(self)
+        useraction.initialize()
 
         if useraction.is_valid_event():
             manager.add(useraction)
         else:
             LOG.info('action not kept: is not a valid event')
+            LOG.info(event)
             #del useraction.context
         self._sudo(None)
-
-    def get_useraction_info(self):
-        info = {}
-        if IUUIDAware.providedBy(self.context):
-            info["target"] = "%s" % IUUID(self.context)
-        else:
-            LOG.error("context is not IUUIDAware: %s" % self.context)
-            return
-        info["what"] = self.event
-        info["when"] = datetime.now()
-        info["who"] = self.mtool.getAuthenticatedMember().getId()
-        info["where"] = self.context
-        return info
 
     def get_manager(self):
         #now try to save the useraction
@@ -168,3 +140,13 @@ class HandleArchetypesAction(object):
         else:
             #back to the security manager in the init
             setSecurityManager(self._security_manager)
+
+
+class HandleConfigurationUserAction(BaseHandler):
+    """This handler is dedicated to plone site itself"""
+
+    wrapper_class = ConfigurationUserActionWrapper
+
+    def __init__(self, event):
+        self.context = event.context.context
+        super(HandleConfigurationUserAction, self).__init__(self.context, event)

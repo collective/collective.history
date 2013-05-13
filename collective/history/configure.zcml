@@ -33,7 +33,12 @@
   <subscriber
       for="Products.Archetypes.interfaces.IBaseObject
            zope.component.interfaces.IObjectEvent"
-      handler=".handler.HandleArchetypesAction"
+      handler=".archetypes.HandleArchetypesUserAction"
+      />
+
+  <subscriber
+      for="plone.app.controlpanel.interfaces.IConfigurationChangedEvent"
+      handler=".handler.HandleConfigurationUserAction"
       />
   <interface
       interface=".layer.Layer"

@@ -15,12 +15,15 @@ from collective.history import backend
 
 class IUserActionManager(backend.IBackendStorage):
     """The global user action manager provide a complete API to
-    manage user actions. It's a wrapper around the backend storage.
+    manage user actions. It's a wrapper around the backend storage
+    responsible to choose the backend to use.
 
-    The implementation must be a browser view to know who & where."""
+    This design make it simple to code an other backend without changing
+    anything more than just a record in portal_registry.
 
-    #context
-    #request
+    Notice: The implementation must be a browser view to know who & where.
+    """
+
     backend = schema.TextLine(title=u"Backend name")
 
 
@@ -28,7 +31,7 @@ class UserActionManager(BrowserView):
     interface.implements(IUserActionManager)
 
     def __init__(self, context, request):
-        self.context = context  # TODO: change this context to become the portal
+        self.context = context
         self.request = request
         self.backend = None
         self.registry = None
