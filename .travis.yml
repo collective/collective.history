@@ -1,15 +1,17 @@
 language: python
 python: 2.7
 env:
-  - TARGET=test
-  - TARGET=coverage.sh
-  - TARGET=python-validation.sh
+  - TARGET=test PLONE=4.2
+  - TARGET=test PLONE=4.3
+  - TARGET=coverage.sh PLONE=4.3
+  - TARGET=python-validation.sh PLONE=4.3
 
 before_install:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
 
 install:
+  - sed -ie "s#travis-4.x.cfg#travis-$PLONE.x.cfg#" travis.cfg
   - mkdir -p buildout-cache/eggs
   - mkdir -p buildout-cache/downloads
   - python bootstrap.py -c travis.cfg
