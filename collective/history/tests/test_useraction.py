@@ -4,12 +4,12 @@ from collective.history.useraction import BaseUserActionWrapper
 import datetime
 
 
-class IntegrationTestBaseUserAction(base.IntegrationTestCase):
+class TestBaseUserAction(base.UnitTestCase):
     """We tests the setup (install) of the addons. You should check all
     stuff in profile are well activated (browserlayer, js, content types, ...)
     """
     def setUp(self):
-        base.IntegrationTestCase.setUp(self)
+        base.UnitTestCase.setUp(self)
         self.useraction = BaseUserActionWrapper(fake.FakeHandler())
 
     def test_initialize(self):

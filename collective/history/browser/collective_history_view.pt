@@ -37,7 +37,7 @@
             <a tal:condition="useraction/where_uri" tal:attributes="href string:${useraction/where_uri}" tal:content="useraction/where_uri">URI</a>
           </td>
           <td>
-            <a tal:condition="useraction/where_uri" tal:attributes="href string:${useraction/where_uri}" tal:content="useraction/where_uri">URI</a>
+            <a tal:condition="useraction/where_uid" tal:attributes="href string:${portal_url}/resolveuid/${useraction/where_uid}" tal:content="useraction/where_uid">URI</a>
           </td>
           <td>
             <span tal:condition="useraction/where_path" tal:content="useraction/where_path"></span>

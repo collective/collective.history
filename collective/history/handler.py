@@ -1,4 +1,5 @@
 import logging
+from zope import component
 from Products.CMFCore.utils import getToolByName
 from AccessControl.SecurityManagement import newSecurityManager,\
     getSecurityManager, setSecurityManager
@@ -38,6 +39,7 @@ class BaseHandler(object):
     def __init__(self, context, event):
         self.context = context
         self.event = event
+        self._portal = None
         self._mtool = None
         self._pstate = None
         if self.mtool is None:
@@ -90,17 +92,28 @@ class BaseHandler(object):
         return True
 
     @property
+    def portal(self):
+        if self._portal is None:
+            portal_url = getToolByName(self.context, "portal_url", None)
+            if portal_url is not None:
+                self._portal = portal_url.getPortalObject()
+        if self._portal is None:
+            self._portal = component.getSiteManager()
+
+        return self._portal
+
+    @property
     def mtool(self):
-        if self._mtool is None:
+        if self._mtool is None and self.portal:
             mtool = "portal_membership"
-            self._mtool = getToolByName(self.context, mtool, None)
+            self._mtool = getToolByName(self.portal, mtool, None)
         return self._mtool
 
     @property
     def pstate(self):
         if self._pstate is None:
             pstate = "plone_portal_state"
-            self._pstate = self.context.restrictedTraverse(pstate)
+            self._pstate = self.portal.restrictedTraverse(pstate)
         return self._pstate
 
     def _is_temporary(self):

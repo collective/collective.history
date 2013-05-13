@@ -41,6 +41,12 @@
            zope.lifecycleevent.interfaces.IObjectMovedEvent"
       handler=".archetypes.HandleArchetypesUserAction"
       />
+  <!-- dexterity support -->
+  <subscriber
+      for="plone.dexterity.interfaces.IDexterityContent
+           zope.component.interfaces.IObjectEvent"
+      handler=".dexterity.HandleDxUserAction"
+      />
 
   <subscriber
       for="plone.app.controlpanel.interfaces.IConfigurationChangedEvent"

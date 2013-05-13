@@ -15,7 +15,7 @@
     <ul>
       <li><span i18n:translate="">What</span>: <span tal:content="context/what"></span></li>
       <li><span i18n:translate="">When</span>: <span tal:content="context/when"></span></li>
-      <li><a tal:attributes="href string:${context/portal_url}/resolveuid/${context/where}">Where</a></li>
+      <li><a tal:attributes="href string:${context/portal_url}/resolveuid/${context/where_uid}">Where</a></li>
       <li><span i18n:translate="">Who</span>: <span tal:content="context/who"></span></li>
     </ul>
     <tal:what tal:condition="context/what_info">
