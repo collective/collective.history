@@ -72,7 +72,7 @@ class ArchetypesUserActionWrapper(BaseUserActionWrapper):
             'Products.DCWorkflow.interfaces.IBeforeTransitionEvent',
             'zope.lifecycleevent.interfaces.IObjectCreatedEvent',
             'zope.lifecycleevent.interfaces.IObjectAddedEvent',
-#            'zope.lifecycleevent.interfaces.IObjectModifiedEvent',
+            #'zope.lifecycleevent.interfaces.IObjectModifiedEvent',
         )
         for iface in blacklist:
             if self.what == iface:

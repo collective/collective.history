@@ -2,6 +2,10 @@ from zope import interface
 from zope.component.interfaces import IObjectEvent
 
 
+class IFakeEvent(IObjectEvent):
+    """fake event"""
+
+
 class FakeContext(object):
     def __init__(self):
         self.physical_path = ('Plone', 'foo')
@@ -11,7 +15,7 @@ class FakeContext(object):
 
 
 class FakeEvent(object):
-    interface.implements(IObjectEvent)
+    interface.implements(IFakeEvent)
 
     def __init__(self):
         self.object = FakeContext()

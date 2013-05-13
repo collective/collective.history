@@ -75,3 +75,4 @@ parts
 develop-eggs
 var
 src
+coverage

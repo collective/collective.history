@@ -23,12 +23,19 @@ class IntegrationTestBaseUserAction(base.IntegrationTestCase):
         self.assertIsNotNone(self.useraction.event)
 #        self.assertIsNotNone(self.useraction.what)
         self.assertIsNotNone(self.useraction.when)
-#        self.assertIsNotNone(self.useraction.where)
+        self.assertIsNotNone(self.useraction.where)
         self.assertIsNotNone(self.useraction.who)
         self.assertIsNotNone(self.useraction.target)
         self.assertEqual(type(self.useraction.event), fake.FakeEvent)
         self.assertEqual(type(self.useraction.when), datetime.datetime)
         self.assertEqual(self.useraction.who, 'admin')
+
+    def test_what(self):
+        self.useraction.what = "test"
+        self.assertEqual(self.useraction.what, "test")
+        self.useraction.what = fake.FakeEvent()
+        iface = "collective.history.tests.fake.IFakeEvent"
+        self.assertEqual(self.useraction.what, iface)
 
 
 def test_suite():

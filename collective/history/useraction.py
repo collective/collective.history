@@ -63,6 +63,8 @@ class BaseUserActionWrapper(object):
                         iface_id = str(iface.__identifier__)
                         self.data["what"] = iface_id
                         break
+        elif type(value) == str:
+            self.data["what"] = value
 
     def get_what(self):
         return self.data.get("what", None)
