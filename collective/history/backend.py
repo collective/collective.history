@@ -80,9 +80,10 @@ class DexterityBackend(object):
         target.what = original.what
         target.what_info = original.what_info
         target.when = original.when
-        target.where = original.where
+        target.where_uri = original.where_uri
+        target.where_uid = original.where_uid
+        target.where_path = original.where_path
         target.who = original.who
-        target.target = original.target
         target.id = original.id
         target.setTitle(original.title)
         return target

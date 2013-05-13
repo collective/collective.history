@@ -8,10 +8,17 @@ class IFakeEvent(IObjectEvent):
 
 class FakeContext(object):
     def __init__(self):
-        self.physical_path = ('Plone', 'foo')
+        self.physical_path = ('', 'Plone', 'foo')
+        self.REQUEST = FakeRequest()
+        self.REQUEST.ACTUAL_URL += '/Plone/foo/edit'
 
     def getPhysicalPath(self):
         return self.physical_path
+
+
+class FakeRequest(object):
+    def __init__(self):
+        self.ACTUAL_URL = 'http://nohost'
 
 
 class FakeEvent(object):

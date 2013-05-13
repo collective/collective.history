@@ -18,14 +18,12 @@ class IntegrationTestBaseUserAction(base.IntegrationTestCase):
         self.assertIsNone(self.useraction.when)
         self.assertIsNone(self.useraction.where)
         self.assertIsNone(self.useraction.who)
-        self.assertIsNone(self.useraction.target)
         self.useraction.initialize()
         self.assertIsNotNone(self.useraction.event)
 #        self.assertIsNotNone(self.useraction.what)
         self.assertIsNotNone(self.useraction.when)
         self.assertIsNotNone(self.useraction.where)
         self.assertIsNotNone(self.useraction.who)
-        self.assertIsNotNone(self.useraction.target)
         self.assertEqual(type(self.useraction.event), fake.FakeEvent)
         self.assertEqual(type(self.useraction.when), datetime.datetime)
         self.assertEqual(self.useraction.who, 'admin')
@@ -36,6 +34,38 @@ class IntegrationTestBaseUserAction(base.IntegrationTestCase):
         self.useraction.what = fake.FakeEvent()
         iface = "collective.history.tests.fake.IFakeEvent"
         self.assertEqual(self.useraction.what, iface)
+
+    def test_what_info(self):
+        self.useraction.what_info = {"test": "info"}
+        self.assertEqual(self.useraction.what_info, '{"test": "info"}')
+        self.useraction.data["what_info"] = None
+
+        self.useraction.what_info = '{"test": "info"}'
+        self.assertEqual(self.useraction.what_info, '{"test": "info"}')
+        self.useraction.data["what_info"] = None
+
+        self.useraction.what_info = "notvalid"
+        self.assertIsNone(self.useraction.what_info)
+
+    def test_when(self):
+        now = datetime.datetime.now()
+        self.useraction.when = now
+        self.assertEqual(self.useraction.when, now)
+        self.useraction.data["when"] = None
+
+        self.useraction.when = "notvalid"
+        self.assertIsNone(self.useraction.when)
+
+    def test_where(self):
+        phy = fake.FakeContext()
+        self.useraction.where = phy
+        self.assertEqual(self.useraction.where_path, '/Plone/foo')
+        uri = 'http://nohost/Plone/foo/edit'
+        self.assertEqual(self.useraction.where_uri, uri)
+
+    def test_who(self):
+        self.useraction.who = 'admin'
+        self.assertEqual(self.useraction.who, 'admin')
 
 
 def test_suite():

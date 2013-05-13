@@ -22,11 +22,12 @@ class IUserAction(form.Schema):
     """The schema of a user action"""
     id = schema.ASCIILine(title=u"ID")
     what = schema.ASCIILine(title=u"What")
-    when = schema.Datetime(title=u"When")
-    where = schema.ASCIILine(title=u"Where")
-    where_uid = schema.ASCIILine(title=u"Where UID")
-    who = schema.ASCIILine(title=u"Who")
     what_info = schema.TextLine(title=u"What more info")
+    when = schema.Datetime(title=u"When")
+    where_uri = schema.URI(title=u"Where URI")
+    where_uid = schema.ASCIILine(title=u"Where UID")
+    where_path = schema.ASCIILine(title=u"Where path")
+    who = schema.ASCIILine(title=u"Who")
     transactionid = schema.ASCIILine(title=u"Transaction ID")
 
 
@@ -46,7 +47,6 @@ class BaseUserActionWrapper(object):
         self.when = datetime.now()
         self.who = self.handler.mtool.getAuthenticatedMember().getId()
         self.where = self.event.object
-        self.target = self.event.object
 
     def set_what(self, value):
         if IObjectEvent.providedBy(value):
@@ -75,7 +75,11 @@ class BaseUserActionWrapper(object):
         if type(value) == dict:
             self.data["what_info"] = json.dumps(value)
         else:
-            self.data["what_info"] = value
+            try:
+                json.loads(value)
+                self.data["what_info"] = value
+            except ValueError:
+                LOG.error("what_info is not valide json")
 
     def get_what_info(self):
         return self.data.get("what_info", {})
@@ -92,41 +96,57 @@ class BaseUserActionWrapper(object):
     when = property(get_when, set_when)
 
     def set_where(self, value):
-        if hasattr(value, 'getPhysicalPath'):
-            self.data["where"] = '/'.join(value.getPhysicalPath())
+        if hasattr(value, 'REQUEST'):
+            self.data["where_uri"] = value.REQUEST.ACTUAL_URL
         if IUUIDAware.providedBy(value):
             self.data["where_uid"] = IUUID(value)
-        if type(value) == str:
-            self.data["where"] = value
+        if hasattr(value, 'getPhysicalPath'):
+            self.data["where_path"] = '/'.join(value.getPhysicalPath())
 
     def get_where(self):
-        return self.data.get("where", None)
+        where = {}
+        uri = self.data.get("where_uri", None)
+        if uri:
+            where["uri"] = uri
+        uid = self.data.get("where_uid", None)
+        if uid:
+            where["uid"] = uid
+        path = self.data.get("where_path", None)
+        if path:
+            where["path"] = path
+        if where:
+            return where
 
     where = property(get_where, set_where)
 
+    @property
+    def where_uri(self):
+        return self.data.get("where_uri", None)
+
+    @property
+    def where_uid(self):
+        return self.data.get("where_uid", None)
+
+    @property
+    def where_path(self):
+        return self.data.get("where_path", None)
+
     def set_who(self, value):
-        self.data["who"] = value
+        if type(value) == str:
+            self.data["who"] = value
 
     def get_who(self):
         return self.data.get("who", None)
 
     who = property(get_who, set_who)
 
-    def set_target(self, value):
-        if IUUIDAware.providedBy(value):
-            self.target = "%s" % IUUID(self.event.object)
-        else:
-            self.data["target"] = value
-
-    def get_target(self):
-        return self.data.get("target", None)
-
-    target = property(get_target, set_target)
-
     def is_valid_event(self):
         what = self.data.get("what", None) is not None
         when = self.data.get("when", None) is not None
-        where = self.data.get("where", None) is not None
+        where_uri = self.data.get("where_uri", None) is not None
+        where_uid = self.data.get("where_uid", None) is not None
+        where_path = self.data.get("where_path", None) is not None
+        where = where_uri or where_uid or where_path
         who = self.data.get("who", None)
 #        info = (what, when, where, who)
 #        LOG.info("what: %s; when: %s; where: %s; who: %s" % info)
@@ -225,7 +245,7 @@ class BaseUserActionWrapper(object):
         title = "%s" % self.when.strftime("%Y-%m-%d")
         title += "-%s" % normalizer.normalize(self.who)
         title += "-%s" % self.what.lower()
-        title += "-%s" % self.target
+        title += "-%s" % self.where_uid
 
         if type(title) == unicode:
             return title.encode("utf-8")
@@ -242,8 +262,7 @@ class ConfigurationUserActionWrapper(BaseUserActionWrapper):
         self.what = self.event
         self.when = datetime.now()
         self.who = self.handler.mtool.getAuthenticatedMember().getId()
-        self.where = self.event.context.context
-        self.target = self.event.context
+        self.where = self.event.context
 
     def set_what(self, value):
         if IConfigurationChangedEvent.providedBy(value):
@@ -269,13 +288,15 @@ class ConfigurationUserActionWrapper(BaseUserActionWrapper):
 #            return False
 #        return super(ConfigurationUserActionWrapper, self).is_valid_event()
 
-    def set_target(self, value):
+    def set_where(self, value):
         if IPloneControlPanelForm.providedBy(value):
-            self.data["target"] = str(value.__name__)
+            self.data["where_uri"] = value.request.ACTUAL_URL
+            self.data["where_uid"] = IUUID(value.context)
+            self.data["where_path"] = "/".join(value.context.getPhysicalPath())
         else:
             LOG.error("target is not a controlpanel form")
 
-    def get_target(self):
-        return self.data.get("target", None)
+    def get_where(self):
+        return self.data.get("where", None)
 
-    target = property(get_target, set_target)
+    where = property(get_where, set_where)

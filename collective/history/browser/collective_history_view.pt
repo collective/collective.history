@@ -22,7 +22,9 @@
         <tr>
             <th i18n:translate="">When</th>
             <th i18n:translate="">What</th>
-            <th i18n:translate="">Where</th>
+            <th i18n:translate="">Where (URI)</th>
+            <th i18n:translate="">Where (UID)</th>
+            <th i18n:translate="">Where (PATH)</th>
             <th i18n:translate="">More</th>
         </tr>
       </thead>
@@ -31,7 +33,15 @@
         <tr tal:define="useraction brain/getObject">
           <td tal:content="python:useraction.when.strftime('%Y-%m-%d %H:%M:%S')"></td>
           <td tal:content="useraction/what"></td>
-          <td tal:content="useraction/where"></td>
+          <td>
+            <a tal:condition="useraction/where_uri" tal:attributes="href string:${useraction/where_uri}" tal:content="useraction/where_uri">URI</a>
+          </td>
+          <td>
+            <a tal:condition="useraction/where_uri" tal:attributes="href string:${useraction/where_uri}" tal:content="useraction/where_uri">URI</a>
+          </td>
+          <td>
+            <span tal:condition="useraction/where_path" tal:content="useraction/where_path"></span>
+          </td>
           <td><a tal:attributes="href string:${context_url}/${useraction/id}" i18n:translate="">more</a></td>
         </tr>
       </tal:def>
