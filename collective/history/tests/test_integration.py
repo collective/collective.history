@@ -60,6 +60,22 @@ class TestIntegration(base.IntegrationTestCase):
         self.assertEqual(h2.where_uid, IUUID(d1))
         self.assertEqual(h2.where_uri, 'http://nohost')
 
+    def test_edit(self):
+        self.portal.invokeFactory('Document', 'test-document', title="D1")
+        d1 = self.portal["test-document"]
+        d1.processForm()
+        d1.setTitle('New title')
+        d1.processForm()
+        history = self.portal.portal_history.objectValues()
+        self.assertEqual(len(history), 2)
+        h2 = history[1]
+        self.assertEqual(h2.what, "edited")
+        self.assertEqual(type(h2.when), datetime.datetime)
+        self.assertEqual(h2.who, testing.TEST_USER_ID)
+        self.assertEqual(h2.where_path, '/plone/test-document')
+        self.assertEqual(h2.where_uid, IUUID(d1))
+        self.assertEqual(h2.where_uri, 'http://nohost')
+
 
 def test_suite():
     return unittest.defaultTestLoader.loadTestsFromName(__name__)
