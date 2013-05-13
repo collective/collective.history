@@ -6,7 +6,6 @@ from zope import interface
 from Products.CMFCore.utils import getToolByName
 
 from plone.dexterity.utils import createContent
-from plone.i18n.normalizer.interfaces import IIDNormalizer
 
 
 LOG = logging.getLogger("collective.history")

@@ -13,7 +13,6 @@ from plone.uuid.interfaces import IUUID, IUUIDAware
 from plone.app.controlpanel.interfaces import IConfigurationChangedEvent,\
     IPloneControlPanelForm
 from plone.registry.interfaces import IRecordModifiedEvent
-from plone.app.form.interfaces import IEditSavedEvent
 
 
 LOG = logging.getLogger("collective.history")

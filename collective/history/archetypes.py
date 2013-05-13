@@ -1,11 +1,8 @@
 import logging
 
-from datetime import datetime
-
 #events
 from zope.lifecycleevent.interfaces import (
     IObjectCopiedEvent,
-#    IObjectAddedEvent,
     IObjectMovedEvent,
     IObjectRemovedEvent,
 )
@@ -21,7 +18,6 @@ from Products.DCWorkflow.interfaces import (
 
 from collective.history.useraction import BaseUserActionWrapper
 from collective.history.handler import BaseHandler
-from plone.uuid.interfaces import IUUIDAware, IUUID
 from Products.CMFCore.utils import getToolByName
 
 LOG = logging.getLogger("collective.history")
@@ -68,8 +64,12 @@ class ArchetypesUserActionWrapper(BaseUserActionWrapper):
 
     def is_valid_event(self):
         blacklist = (
+            'OFS.interfaces.IObjectWillBeRemovedEvent',
+            'OFS.interfaces.IObjectWillBeMovedEvent',
             'Products.Archetypes.interfaces.event.IEditBegunEvent',
             'Products.CMFCore.interfaces._events.IActionSucceededEvent',
+            'Products.CMFCore.interfaces._events.IActionWillBeInvokedEvent',
+            'Products.DCWorkflow.interfaces.IBeforeTransitionEvent',
             'zope.lifecycleevent.interfaces.IObjectCreatedEvent',
             'zope.lifecycleevent.interfaces.IObjectAddedEvent',
             'zope.lifecycleevent.interfaces.IObjectModifiedEvent',
@@ -88,9 +88,9 @@ class ArchetypesUserActionWrapper(BaseUserActionWrapper):
                 return False
             #remove is moved ... kinda weird, let's fix it:
             if not newName:
-                self.context.what = 'deleted'
+                self.data["what"] = "deleted"
         # do not keep dcworkflow initialization
-        if self.what == 'statechanged':
+        if self.what == "statechanged":
             if self.event.old_state == self.event.new_state:
                 return False
         validated = super(ArchetypesUserActionWrapper, self).is_valid_event()

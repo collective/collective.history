@@ -1,12 +1,9 @@
 import logging
-from datetime import datetime
 from Products.CMFCore.utils import getToolByName
 from AccessControl.SecurityManagement import newSecurityManager,\
     getSecurityManager, setSecurityManager
 from AccessControl.User import UnrestrictedUser as BaseUnrestrictedUser
 from collective.history.useraction import ConfigurationUserActionWrapper
-from zope.traversing.interfaces import BeforeTraverseEvent
-from zope.component._api import getSiteManager
 
 
 VIEW_NAME = '@@collective.history.manager'
