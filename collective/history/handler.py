@@ -125,12 +125,12 @@ class BaseHandler(object):
         phistory = False
         if self.context.portal_type == "collective.history.useraction":
             ptype = True
-        if self.context.getId() == "portal_history":
+        if self.context.id == "portal_history":
             phistory = True
         return ptype or phistory
 
     def _is_installed(self):
-        qi = getToolByName(self.context, 'portal_quickinstaller')
+        qi = getToolByName(self.portal, 'portal_quickinstaller')
         addon = 'collective.history'
         return qi.isProductInstalled(addon)
 

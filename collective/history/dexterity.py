@@ -25,7 +25,7 @@ class DxUserActionWrapper(BaseUserActionWrapper):
         if IObjectAddedEvent.providedBy(self.event):
             return 'created', self.get_object_added_info()
         if IObjectModifiedEvent.providedBy(self.event):
-            return 'edited', self.get_object_modified_info()
+            return 'modified', self.get_object_modified_info()
         # DCWorkflow
         elif IAfterTransitionEvent.providedBy(self.event):
             return 'statechanged', self.get_transition_info()
@@ -38,8 +38,6 @@ class DxUserActionWrapper(BaseUserActionWrapper):
             return 'moved', self.get_object_moved_info()
         elif IObjectRemovedEvent.providedBy(self.event):
             return 'deleted', self.get_object_moved_info()
-        elif IObjectModifiedEvent.providedBy(self.event):
-            return 'modified', self.get_object_modified_info()
         else:
             #TODO: provide a query component to let addon register things
             pass
