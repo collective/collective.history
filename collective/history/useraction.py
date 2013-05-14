@@ -13,6 +13,7 @@ from plone.uuid.interfaces import IUUID, IUUIDAware
 from plone.app.controlpanel.interfaces import IConfigurationChangedEvent,\
     IPloneControlPanelForm
 from plone.registry.interfaces import IRecordModifiedEvent
+from Products.CMFPlone.interfaces.siteroot import IPloneSiteRoot
 
 
 LOG = logging.getLogger("collective.history")
@@ -290,9 +291,18 @@ class ConfigurationUserActionWrapper(BaseUserActionWrapper):
 
     def set_where(self, value):
         if IPloneControlPanelForm.providedBy(value):
-            self.data["where_uri"] = value.request.ACTUAL_URL
-            self.data["where_uid"] = IUUID(value.context)
-            self.data["where_path"] = "/".join(value.context.getPhysicalPath())
+            context = value.context
+            request = value.request
+            self.data["where_uri"] = request.ACTUAL_URL
+            if IUUIDAware.providedBy(context):
+                self.data["where_uid"] = IUUID(context)
+            elif hasattr(context, 'UID'):
+                self.data["where_uid"] = context.UID()
+            elif IPloneSiteRoot.providedBy(context):
+                self.data["where_uid"] = "Plone"
+            if hasattr(context, "getPhysicalPath"):
+                path = "/".join(value.context.getPhysicalPath())
+                self.data["where_path"] = path
         else:
             LOG.error("target is not a controlpanel form")
 
