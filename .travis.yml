@@ -6,6 +6,7 @@ env:
   - TARGET=coverage.sh PLONE_VERSION=4.3
   - TARGET=python-validation.sh PLONE_VERSION=4.3
 install:
+  - sudo apt-get -qq install libfreetype6-dev liblcms1-dev libwebp-dev
   - sed -ie "s#travis-4.x.cfg#travis-$PLONE_VERSION.x.cfg#" travis.cfg
   - mkdir -p buildout-cache/eggs
   - mkdir -p buildout-cache/downloads
