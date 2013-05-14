@@ -30,7 +30,7 @@ Create a dexterity content type, use it and check history
     Add dexterity  mytype  Test my type
     Workflow Publish
     Rename Content Title    test-my-type  New title
-    Wait Until Page Contains Element  css=body.section-test-my-type
+    Wait Until Page Contains Element    css=body.section-test-my-type
     Remove Content    test-my-type
     Go to history
     Verify history    1   created       /test-my-type
