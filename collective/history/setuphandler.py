@@ -18,48 +18,17 @@ def setupVarious(context):
 
     portal = context.getSite()
     if "portal_history" not in portal.objectIds():
-        info = {
-            'id': 'portal_history',
-            'title': 'History of the site',
-            'type': 'Folder',
-            'exclude_from_nav': True,
-            'layout': 'collective_history_view'
-        }
-        _createObjects(portal, info)
+        createHistory(portal)
+    updateHistoryContainer(portal.portal_history)
 
 
-def _createObjects(parent, new_object):
-
-    LOG.info("Creating %s in %s" % (new_object, parent))
-
-    existing = parent.objectIds()
-    if new_object['id'] in existing:
-        LOG.info("%s exists, skipping" % new_object['id'])
+def updateHistoryContainer(obj):
+    obj.unindexObject()
+    obj.setLayout("collective_history_view")
+    if IExcludeFromNavigation.providedBy(obj):
+        obj.exclude_from_nav = True
     else:
-        _createObjectByType(
-            new_object['type'],
-            parent,
-            id=new_object['id'],
-            title=new_object['title']
-        )
-    LOG.info("Now to modify the new_object...")
-
-    obj = parent.get(new_object['id'], None)
-    if obj is None:
-        msg = "can't get new_object %s to modify it!" % new_object['id']
-        LOG.info(msg)
-    else:
-        if obj.Type() != new_object['type']:
-            LOG.info("types don't match!")
-        else:
-            if 'layout' in new_object:
-                obj.setLayout(new_object['layout'])
-            if 'exclude_from_nav' in new_object:
-                if IExcludeFromNavigation.providedBy(obj):
-                    obj.exclude_from_nav = new_object['exclude_from_nav']
-                else:
-                    obj.setExcludeFromNav(new_object['exclude_from_nav'])
-            obj.reindexObject()
+        obj.setExcludeFromNav(True)
 
     aspect = ISelectableConstrainTypes(obj)
     addable = aspect.getImmediatelyAddableTypes()
@@ -67,7 +36,18 @@ def _createObjects(parent, new_object):
         aspect.setConstrainTypesMode(1)  # select manually
         types = ["collective.history.useraction"]
         if IDexterityContainer.providedBy(obj):
-            #bypass check for available ...
+            #bypass check for available types
             obj.immediately_addable_types = types
         else:
             aspect.setImmediatelyAddableTypes(types)
+
+
+def createHistory(parent):
+    existing = parent.objectIds()
+    if "portal_history" not in existing:
+        _createObjectByType(
+            "Folder",
+            parent,
+            id="portal_history",
+            title="History of the site"
+        )
