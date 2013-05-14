@@ -3,6 +3,8 @@ import logging
 
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.interfaces.constrains import ISelectableConstrainTypes
+from plone.app.dexterity.behaviors.exclfromnav import IExcludeFromNavigation
+from plone.dexterity.interfaces import IDexterityContainer
 
 
 LOG = logging.getLogger("collective.history")
@@ -53,11 +55,19 @@ def _createObjects(parent, new_object):
             if 'layout' in new_object:
                 obj.setLayout(new_object['layout'])
             if 'exclude_from_nav' in new_object:
-                obj.setExcludeFromNav(new_object['exclude_from_nav'])
+                if IExcludeFromNavigation.providedBy(obj):
+                    obj.exclude_from_nav = new_object['exclude_from_nav']
+                else:
+                    obj.setExcludeFromNav(new_object['exclude_from_nav'])
             obj.reindexObject()
 
     aspect = ISelectableConstrainTypes(obj)
     addable = aspect.getImmediatelyAddableTypes()
     if "collective.history.useraction" not in addable:
         aspect.setConstrainTypesMode(1)  # select manually
-        aspect.setImmediatelyAddableTypes(["collective.history.useraction"])
+        types = ["collective.history.useraction"]
+        if IDexterityContainer.providedBy(obj):
+            #bypass check for available ...
+            obj.immediately_addable_types = types
+        else:
+            aspect.setImmediatelyAddableTypes(types)
