@@ -3,7 +3,6 @@ python: 2.7
 env:
   - TARGET=test PLONE_VERSION=4.2
   - TARGET=test PLONE_VERSION=4.3
-  - TARGET=coverage.sh PLONE_VERSION=4.3
   - TARGET=python-validation.sh PLONE_VERSION=4.3
 install:
   - sudo apt-get -qq install libfreetype6-dev liblcms1-dev libwebp-dev
@@ -16,4 +15,10 @@ install:
 before_script:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
-script: bin/$TARGET
+script:
+  - bin/$TARGET
+  - bin/coverage run bin/test
+after_success:
+  - bin/coverage report -m
+  - pip install coveralls
+  - coveralls
