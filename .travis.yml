@@ -1,12 +1,11 @@
 language: python
 python: 2.7
 env:
-  - TARGET=test PLONE_VERSION=4.2
-  - TARGET=test PLONE_VERSION=4.3
-  - TARGET=python-validation.sh PLONE_VERSION=4.3
+  - TARGET=test
+  - TARGET=coverage run bin/test
+  - TARGET=python-validation.sh
 install:
   - sudo apt-get -qq install libfreetype6-dev liblcms1-dev libwebp-dev
-  - sed -ie "s#travis-4.x.cfg#travis-$PLONE_VERSION.x.cfg#" travis.cfg
   - mkdir -p buildout-cache/eggs
   - mkdir -p buildout-cache/downloads
   - python bootstrap.py -c travis.cfg
@@ -17,7 +16,6 @@ before_script:
   - sh -e /etc/init.d/xvfb start
 script:
   - bin/$TARGET
-  - bin/coverage run bin/test
 after_success:
   - bin/coverage report -m
   - pip install coveralls
