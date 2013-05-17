@@ -2,6 +2,7 @@
 
 Resource  plone/app/robotframework/selenium.robot
 Resource  plone/app/robotframework/keywords.robot
+Resource  collective/history/keywords.robot
 
 Test Setup  Open test browser
 Test Teardown  Close all browsers
@@ -39,14 +40,6 @@ Create a dexterity content type, use it and check history
     Verify history    4   deleted       /test-my-type
 
 *** Keywords ***
-
-Go to history
-    Go to  ${PLONE_URL}/portal_history
-
-Verify history
-    [Arguments]  ${row}  ${what}  ${where}
-    Table Row Should Contain    history  ${row}  /${PLONE_SITE_ID}${where}
-    Table Row Should Contain    history  ${row}  ${what}
 
 Create a dexterity content type
     [Arguments]  ${id}  ${name}
