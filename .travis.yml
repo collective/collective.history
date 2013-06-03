@@ -17,6 +17,5 @@ before_script:
 script:
   - bin/$TARGET
 after_success:
-  - bin/coverage report -m
   - pip install coveralls
   - coveralls
