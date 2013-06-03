@@ -52,11 +52,23 @@ This addon is tested and has:
 * integration tests
 * functional tests (robotframework)
 * python syntax tests (flake8)
-* tests coverage up to 75%
+* tests coverage control
 * continious integration using travis
 
 .. image:: https://secure.travis-ci.org/collective/collective.history.png
     :target: http://travis-ci.org/collective/collective.history
+
+.. image:: https://coveralls.io/repos/collective/collective.history/badge.png?branch=master
+    :alt: Coverage
+    :target: https://coveralls.io/r/collective/collective.history
+
+.. image:: https://pypip.in/v/collective.history/badge.png
+    :target: https://crate.io/packages/collective.history/
+    :alt: Latest PyPI version
+
+.. image:: https://pypip.in/d/collective.history/badge.png
+    :target: https://crate.io/packages/collective.history/
+    :alt: Number of PyPI downloads
 
 
 Credits
