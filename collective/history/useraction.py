@@ -197,7 +197,18 @@ class BaseUserActionWrapper(object):
     def get_configuration_changed_info(self):
         if self.event.data:
             info = {"data": self.event.data}
-            return json.dumps(info)
+            try:
+                return json.dumps(info)
+            except TypeError:
+                data = {}
+                for key in self.event.data:
+                    value = self.event.data[key]
+                    try:
+                        json.dumps({"test": value})
+                        data[key] = value
+                    except TypeError:
+                        pass
+                return json.dumps({"data": data})
 
     def get_object_copied_info(self):
         if self.event.original:
