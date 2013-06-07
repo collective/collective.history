@@ -47,6 +47,11 @@
            zope.component.interfaces.IObjectEvent"
       handler=".dexterity.HandleDxUserAction"
       />
+  <subscriber
+      for="plone.app.discussion.interfaces.IComment
+	   zope.component.interfaces.IObjectEvent"
+      handler=".discussion.HandleDiscussionUserAction"
+      />
 
   <subscriber
       for="plone.app.controlpanel.interfaces.IConfigurationChangedEvent"

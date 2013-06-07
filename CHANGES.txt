@@ -6,3 +6,6 @@ Changelog
 
 - Package created using templer
   [JeanMichel aka toutpt]
+
+- Add support for discussion
+  [Gagaro]

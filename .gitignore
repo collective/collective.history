@@ -76,3 +76,5 @@ develop-eggs
 var
 src
 coverage
+
+omelette.cfg

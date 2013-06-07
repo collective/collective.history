@@ -84,5 +84,6 @@ People
 ------
 
 - JeanMichel FRANCOIS aka toutpt <toutpt@gmail.com>
+- Yann FOUILLAT aka Gagaro <gagaro42@gmail.com>
 
 .. _documentation: http://plone.org/documentation/kb/installing-add-ons-quick-how-to
