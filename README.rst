@@ -8,6 +8,7 @@ When a user do something Zope throw an event that is catch by this addon
 to save the following information:
 
 * what
+* on what
 * where
 * when
 * who
@@ -19,6 +20,7 @@ This addon track the following events:
 
 * Archetypes: Add / Edit / Delete / Rename
 * Dexterity: Add / Edit / Delete / Rename
+* Discussion: Add / Remove
 
 How it works
 ============
