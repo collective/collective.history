@@ -46,14 +46,15 @@ Create and delete a comment and check history
 
      When I add and publish a document 'Test document'
       And I enable comments on document 'test-document'
-      And I add a comment 'Coucou'
-      And I delete a comment 'Coucou'
+      ${comment_id} =  And I add a comment 'Coucou'
+      And I delete a comment '${comment_id}'
       And I go to the history
 
      Then The history table row '1' should contain 'created' for '/test-document'
       And The history table row '2' should contain 'statechanged' for '/test-document'
-      And The history table row '3' should contain 'added' for '/front-page/++conversation++default/.+'
-      And The history table row '4' should contain 'deleted' for '/front-page/++conversation++default/.+'
+      And The history table row '3' should contain 'edited' for '/test-document'
+      And The history table row '4' should contain 'added' for '/test-document/++conversation++default/${comment_id}'
+      And The history table row '5' should contain 'removed' for '/test-document/++conversation++default/${comment_id}'
 
 
 *** Keywords ***
@@ -117,7 +118,9 @@ I enable comments on document '${document}'
 
 I add a comment '${comment}'
     Input text and validate  css=#form-widgets-comment-text  ${comment}
-    Click Button  Comment  
+    Click Button  Comment
+    ${comment_id} =  Get Element Attribute  css=.comment:last-of-type@id
+    [Return]  ${comment_id}
 
 I delete a comment '${comment}'
     Click Button  Delete
