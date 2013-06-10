@@ -79,6 +79,10 @@ I add and publish a document '${document}'
 
 I rename the content's title of '${content}' to '${title}'
     Rename Content Title    ${content}  ${title}
+
+    ${message} =  Get Element Attribute  css=body@class
+    Log  ${message}  DEBUG
+
     Wait Until Page Contains Element  css=body.section-${content}
 
 I remove the content '${content}'
