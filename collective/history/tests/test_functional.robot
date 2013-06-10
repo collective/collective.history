@@ -59,6 +59,14 @@ Create and delete a comment and check history
 
 *** Keywords ***
 
+My Rename Content Title
+    [arguments]  ${id}  ${new_title}
+
+    Go to  ${PLONE_URL}/${id}/object_rename
+    Input Text for sure  css=input#${id}_title  ${new_title}
+    Click Button  Rename All
+    Go to  ${PLONE_URL}/${id}
+
 I'm logged in as the site owner
     Log in as site owner
     Go to homepage
@@ -78,11 +86,7 @@ I add and publish a document '${document}'
     Workflow Publish
 
 I rename the content's title of '${content}' to '${title}'
-    Rename Content Title    ${content}  ${title}
-
-    ${message} =  Get Element Attribute  css=body@class
-    Log  ${message}  DEBUG
-
+    My Rename Content Title    ${content}  ${title}
     Wait Until Page Contains Element  css=body.section-${content}
 
 I remove the content '${content}'
