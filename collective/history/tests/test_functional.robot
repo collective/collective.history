@@ -40,11 +40,34 @@ Create a dexterity content type, use it and check history
       And The history table row '4' should contain 'deleted' for '/test-my-type'
 
 
+Create and delete a comment and check history
+    Given I'm logged in as the site owner
+      And Discussion is activated
+
+     When I add and publish a document 'Test document'
+      And I enable comments on document 'test-document'
+      And I add a comment 'Coucou'
+      And I delete a comment 'Coucou'
+      And I go to the history
+
+     Then The history table row '1' should contain 'created' for '/test-document'
+      And The history table row '2' should contain 'statechanged' for '/test-document'
+      And The history table row '3' should contain 'added' for '/front-page/++conversation++default/.+'
+      And The history table row '4' should contain 'deleted' for '/front-page/++conversation++default/.+'
+
+
 *** Keywords ***
 
 I'm logged in as the site owner
     Log in as site owner
     Go to homepage
+
+The history table row '${row}' should contain '${what}' for '${where}'
+    Table Row Should Contain    history  ${row}  /${PLONE_SITE_ID}${where}
+    Table Row Should Contain    history  ${row}  ${what}
+
+I go to the history
+    Go to  ${PLONE_URL}/portal_history
 
 I add a folder '${folder}'
     Add folder    ${folder}
@@ -60,13 +83,6 @@ I rename the content's title of '${content}' to '${title}'
 I remove the content '${content}'
     Remove Content    ${content}
 
-I go to the history
-    Go to  ${PLONE_URL}/portal_history
-
-The history table row '${row}' should contain '${what}' for '${where}'
-    Table Row Should Contain    history  ${row}  /${PLONE_SITE_ID}${where}
-    Table Row Should Contain    history  ${row}  ${what}
-
 Dexterity is activated
     Go to  ${PLONE_URL}/prefs_install_products_form
     Select Checkbox  css=#plone\\.app\\.dexterity
@@ -78,7 +94,7 @@ I create a dexterity content type '${id}' called '${name}'
     Input Text  name=form.widgets.title  ${name}
     Input Text  name=form.widgets.id  ${id}
     Click Button  Add
-    Go to  ${PLONE_URL}
+    Go to homepage
 
 I add a dexterity content '${id}' named '${title}'
     Go to  ${PLONE_URL}/++add++${id}
@@ -86,3 +102,22 @@ I add a dexterity content '${id}' named '${title}'
     Input Text  css=#form-widgets-IDublinCore-title  ${title}
     Click Button  Save
     Workflow Publish
+
+Discussion is activated
+    Go to  ${PLONE_URL}/@@discussion-settings
+    Select Checkbox  css=#form-widgets-globally_enabled-0
+    Click Button  Save
+    Go to homepage
+
+I enable comments on document '${document}'
+    Go to  ${PLONE_URL}/${document}/edit#fieldsetlegend-settings
+    Select Checkbox  css=#allowDiscussion
+    Click Button  Save
+    Go to  ${PLONE_URL}/${document}
+
+I add a comment '${comment}'
+    Input text and validate  css=#form-widgets-comment-text  ${comment}
+    Click Button  Comment  
+
+I delete a comment '${comment}'
+    Click Button  Delete
