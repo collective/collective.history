@@ -17,11 +17,11 @@ Create content and check history is working
       And I remove the content 'test-document'
       And I go to the history
     
-     Then The history table row '1' should contain 'created' for '/my-folder'
-      And The history table row '2' should contain 'created' for '/test-document'
-      And The history table row '3' should contain 'statechanged' for '/test-document'
-      And The history table row '4' should contain 'modified' for '/test-document'
-      And The history table row '5' should contain 'deleted' for '/test-document'
+     Then The history table row '1' should contain 'created' for '/my-folder' of type 'Folder'
+      And The history table row '2' should contain 'created' for '/test-document' of type 'Document'
+      And The history table row '3' should contain 'statechanged' for '/test-document' of type 'Document'
+      And The history table row '4' should contain 'modified' for '/test-document' of type 'Document'
+      And The history table row '5' should contain 'deleted' for '/test-document' of type 'Document'
 
 
 Create a dexterity content type, use it and check history
@@ -34,10 +34,10 @@ Create a dexterity content type, use it and check history
       And I remove the content 'test-my-type'
       And I go to the history
 
-     Then The history table row '1' should contain 'created' for '/test-my-type'
-      And The history table row '2' should contain 'statechanged' for '/test-my-type'
-      And The history table row '3' should contain 'modified' for '/test-my-type'
-      And The history table row '4' should contain 'deleted' for '/test-my-type'
+     Then The history table row '1' should contain 'created' for '/test-my-type' of type 'mytype'
+      And The history table row '2' should contain 'statechanged' for '/test-my-type' of type 'mytype'
+      And The history table row '3' should contain 'modified' for '/test-my-type' of type 'mytype'
+      And The history table row '4' should contain 'deleted' for '/test-my-type' of type 'mytype'
 
 
 Create and delete a comment and check history
@@ -50,11 +50,11 @@ Create and delete a comment and check history
       And I delete a comment '${comment_id}'
       And I go to the history
 
-     Then The history table row '1' should contain 'created' for '/test-document'
-      And The history table row '2' should contain 'statechanged' for '/test-document'
-      And The history table row '3' should contain 'edited' for '/test-document'
-      And The history table row '4' should contain 'added' for '/test-document/++conversation++default/${comment_id}'
-      And The history table row '5' should contain 'removed' for '/test-document/++conversation++default/${comment_id}'
+     Then The history table row '1' should contain 'created' for '/test-document' of type 'Document'
+      And The history table row '2' should contain 'statechanged' for '/test-document' of type 'Document'
+      And The history table row '3' should contain 'edited' for '/test-document' of type 'Document'
+      And The history table row '4' should contain 'added' for '/test-document/++conversation++default/${comment_id}' of type 'Discussion Item'
+      And The history table row '5' should contain 'removed' for '/test-document/++conversation++default/${comment_id}' of type 'Discussion Item'
 
 
 *** Keywords ***
@@ -71,9 +71,10 @@ I'm logged in as the site owner
     Log in as site owner
     Go to homepage
 
-The history table row '${row}' should contain '${what}' for '${where}'
+The history table row '${row}' should contain '${what}' for '${where}' of type '${on_what}'
     Table Row Should Contain    history  ${row}  /${PLONE_SITE_ID}${where}
     Table Row Should Contain    history  ${row}  ${what}
+    Table Row Should Contain    history  ${row}  ${on_what}
 
 I go to the history
     Go to  ${PLONE_URL}/portal_history
