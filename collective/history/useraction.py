@@ -23,6 +23,7 @@ class IUserAction(form.Schema):
     """The schema of a user action"""
     id = schema.ASCIILine(title=u"ID")
     what = schema.ASCIILine(title=u"What")
+    on_what = schema.ASCIILine(title=u"On what")
     what_info = schema.TextLine(title=u"What more info")
     when = schema.Datetime(title=u"When")
     where_uri = schema.URI(title=u"Where URI")
@@ -45,6 +46,7 @@ class BaseUserActionWrapper(object):
         """two step init. you create the wrapper and then intialize it"""
         self.event = self.handler.event
         self.what = self.event
+        self.on_what = self.event.object
         self.when = datetime.now()
         self.who = self.handler.mtool.getAuthenticatedMember().getId()
         self.where = self.event.object
@@ -86,6 +88,15 @@ class BaseUserActionWrapper(object):
         return self.data.get("what_info", {})
 
     what_info = property(get_what_info, set_what_info)
+
+    def set_on_what(self, value):
+        if hasattr(value, 'portal_type'):
+            self.data["on_what"] = value.portal_type
+
+    def get_on_what(self):
+        return self.data.get("on_what", None)
+
+    on_what = property(get_on_what, set_on_what)
 
     def set_when(self, value):
         if type(value) == datetime:

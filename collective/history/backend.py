@@ -79,6 +79,7 @@ class DexterityBackend(object):
 
         target.what = original.what
         target.what_info = original.what_info
+        target.on_what = original.on_what
         target.when = original.when
         target.where_uri = original.where_uri
         target.where_uid = original.where_uid

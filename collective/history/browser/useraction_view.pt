@@ -14,6 +14,7 @@
     <h1 tal:content="context/title"></h1>
     <ul>
       <li><span i18n:translate="">What</span>: <span tal:content="context/what"></span></li>
+      <li><span i18n:translate="">On what</span>: <span tal:content="context/on_what"></span></li>
       <li><span i18n:translate="">When</span>: <span tal:content="context/when"></span></li>
       <li><a tal:attributes="href string:${context/portal_url}/resolveuid/${context/where_uid}">Where</a></li>
       <li><span i18n:translate="">Who</span>: <span tal:content="context/who"></span></li>
