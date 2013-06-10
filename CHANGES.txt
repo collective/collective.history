@@ -9,3 +9,6 @@ Changelog
 
 - Add support for discussion
   [Gagaro]
+
+- Add on_what attribute
+  [Gagaro]
