@@ -5,13 +5,13 @@ from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.interfaces.constrains import ISelectableConstrainTypes
 from plone.app.dexterity.behaviors.exclfromnav import IExcludeFromNavigation
 from plone.dexterity.interfaces import IDexterityContainer
-
+from Products.CMFCore.utils import getToolByName
 
 LOG = logging.getLogger("collective.history")
-
+CATALOG_NAME = 'portal_history_catalog'
 
 def setupVarious(context):
-    """Create the history container"""
+    """Create the history container and the history catalog"""
 
     if context.readDataFile('collective_history.txt') is None:
         return
@@ -21,7 +21,16 @@ def setupVarious(context):
         createHistory(portal)
     updateHistoryContainer(portal.portal_history)
 
+    updateCatalog(portal.portal_catalog)
 
+def updateCatalog(obj):
+    catalog = getToolByName(obj, 'portal_history_catalog')
+    catalog.addIndex('created', 'DateIndex')
+    catalog.addIndex('what', 'FieldIndex')
+    catalog.addIndex('on_what', 'FieldIndex')
+    catalog.addIndex('who', 'FieldIndex')
+    catalog.addIndex('where_path', 'FieldIndex')
+    
 def updateHistoryContainer(obj):
     obj.unindexObject()
     obj.setLayout("collective_history_view")
