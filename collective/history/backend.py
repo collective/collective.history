@@ -57,7 +57,7 @@ class DexterityBackend(object):
         self.isReady = True
         if self.catalog is None:
             self.catalog = getToolByName(self.context, 'portal_history_catalog')
-            
+
     def add(self, useraction_wrapper):
         if not self.isReady:
             return
@@ -78,7 +78,7 @@ class DexterityBackend(object):
 
         self.container[useraction.id] = useraction
         self.catalog.indexObject(useraction)
-        
+
     def update_useraction(self, original, target):
 
         target.what = original.what
