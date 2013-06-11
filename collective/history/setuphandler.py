@@ -10,6 +10,7 @@ from Products.CMFCore.utils import getToolByName
 LOG = logging.getLogger("collective.history")
 CATALOG_NAME = 'portal_history_catalog'
 
+
 def setupVarious(context):
     """Create the history container and the history catalog"""
 
@@ -23,14 +24,22 @@ def setupVarious(context):
 
     updateCatalog(portal.portal_catalog)
 
+
 def updateCatalog(obj):
     catalog = getToolByName(obj, 'portal_history_catalog')
-    catalog.addIndex('created', 'DateIndex')
-    catalog.addIndex('what', 'FieldIndex')
-    catalog.addIndex('on_what', 'FieldIndex')
-    catalog.addIndex('who', 'FieldIndex')
-    catalog.addIndex('where_path', 'FieldIndex')
-    
+    indexes = catalog.indexes()
+    if 'created' not in indexes:
+        catalog.addIndex('created', 'DateIndex')
+    if 'what' not in indexes:
+        catalog.addIndex('what', 'FieldIndex')
+    if 'on_what' not in indexes:
+        catalog.addIndex('on_what', 'FieldIndex')
+    if 'who' not in indexes:
+        catalog.addIndex('who', 'FieldIndex')
+    if 'where_path' not in indexes:
+        catalog.addIndex('where_path', 'PathIndex')
+
+
 def updateHistoryContainer(obj):
     obj.unindexObject()
     obj.setLayout("collective_history_view")
