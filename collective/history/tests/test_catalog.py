@@ -1,14 +1,10 @@
-import datetime
 import DateTime
 import unittest2 as unittest
-from Products.CMFPlone.interfaces.constrains import ISelectableConstrainTypes
 from Products.CMFCore.utils import getToolByName
 
 from collective.history.tests import base
-from collective.history.tests import fake
-from collective.history.manager import UserActionManager
-from collective.history.backend import DexterityBackend
 from plone.app import testing
+
 
 class TestCatalog(base.IntegrationTestCase):
     """We tests the catalog of the addons. You should check all
@@ -61,6 +57,7 @@ class TestCatalog(base.IntegrationTestCase):
         except:
             self.assertTrue(False, "getObject should work")
         self.assertEqual(useraction.who, 'toto')
+
 
 def test_suite():
     return unittest.defaultTestLoader.loadTestsFromName(__name__)

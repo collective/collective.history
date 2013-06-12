@@ -40,7 +40,7 @@ def updateCatalog(obj):
         catalog.addIndex('where_path', 'PathIndex')
     if 'path' not in indexes:
         catalog.addIndex('path', 'ExtendedPathIndex',
-                         extra = {'indexed_attrs': 'getPhysicalPath'})
+                         extra={'indexed_attrs': 'getPhysicalPath'})
 
 
 def updateHistoryContainer(obj):

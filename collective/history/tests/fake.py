@@ -1,10 +1,6 @@
-import uuid
-
-from zope import component
 from zope import interface
 from zope.component.interfaces import IObjectEvent
 
-from plone.i18n.normalizer.interfaces import IIDNormalizer
 
 class IFakeEvent(IObjectEvent):
     """fake event"""
@@ -52,4 +48,3 @@ class FakeMTool(object):
 
     def getAuthenticatedMember(self):
         return self.member
-
