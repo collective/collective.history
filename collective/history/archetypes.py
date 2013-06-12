@@ -88,7 +88,7 @@ class ArchetypesUserActionWrapper(BaseUserActionWrapper):
                 return False
             #remove is moved ... kinda weird, let's fix it:
             if not newName:
-                self.data["what"] = "deleted"
+                self.data["what"] = "removed"
             if not oldName:
                 return False
         # do not keep dcworkflow initialization
