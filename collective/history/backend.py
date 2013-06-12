@@ -76,6 +76,7 @@ class DexterityBackend(object):
             new_id = action_id + "-%s" % indice
             useraction.id = new_id
 
+        useraction = useraction.__of__(self.container)
         self.container[useraction.id] = useraction
         self.catalog.indexObject(useraction)
 
