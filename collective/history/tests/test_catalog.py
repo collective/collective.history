@@ -31,7 +31,12 @@ class TestCatalog(base.IntegrationTestCase):
 
     def test_what_index(self):
         result = self.catalog.searchResults({'what': 'created'})
-        import pdb; pdb.set_trace()
+        self.assertEqual(len(result), 1)
+        brain = result[0]
+        try:
+            brain.getObject()
+        except:
+            self.assertTrue(False, "getObject should work")
 
 
 def test_suite():

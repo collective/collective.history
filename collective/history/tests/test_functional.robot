@@ -21,7 +21,7 @@ Create content and check history is working
       And The history table row '2' should contain 'created' for '/test-document' of type 'Document'
       And The history table row '3' should contain 'statechanged' for '/test-document' of type 'Document'
       And The history table row '4' should contain 'modified' for '/test-document' of type 'Document'
-      And The history table row '5' should contain 'deleted' for '/test-document' of type 'Document'
+      And The history table row '5' should contain 'removed' for '/test-document' of type 'Document'
 
 
 Create a dexterity content type, use it and check history
@@ -37,7 +37,7 @@ Create a dexterity content type, use it and check history
      Then The history table row '1' should contain 'created' for '/test-my-type' of type 'mytype'
       And The history table row '2' should contain 'statechanged' for '/test-my-type' of type 'mytype'
       And The history table row '3' should contain 'modified' for '/test-my-type' of type 'mytype'
-      And The history table row '4' should contain 'deleted' for '/test-my-type' of type 'mytype'
+      And The history table row '4' should contain 'removed' for '/test-my-type' of type 'mytype'
 
 
 Create and delete a comment and check history
@@ -52,7 +52,7 @@ Create and delete a comment and check history
 
      Then The history table row '1' should contain 'created' for '/test-document' of type 'Document'
       And The history table row '2' should contain 'statechanged' for '/test-document' of type 'Document'
-      And The history table row '3' should contain 'edited' for '/test-document' of type 'Document'
+      And The history table row '3' should contain 'modified' for '/test-document' of type 'Document'
       And The history table row '4' should contain 'added' for '/test-document/++conversation++default/${comment_id}' of type 'Discussion Item'
       And The history table row '5' should contain 'removed' for '/test-document/++conversation++default/${comment_id}' of type 'Discussion Item'
 
