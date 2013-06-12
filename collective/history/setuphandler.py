@@ -21,8 +21,15 @@ def setupVarious(context):
     if "portal_history" not in portal.objectIds():
         createHistory(portal)
     updateHistoryContainer(portal.portal_history)
-
     updateCatalog(portal.portal_catalog)
+    updatePermissions(portal.portal_history)
+
+
+def updatePermissions(portal_history):
+    portal_history.manage_permission('View',
+        roles=['Manager'],
+        acquire=False
+    )
 
 
 def updateCatalog(obj):
