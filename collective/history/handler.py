@@ -46,17 +46,16 @@ class BaseHandler(object):
             LOG.info("action not kept: context is not content")
             return
         self._security_manager = getSecurityManager()
-        self._sudo("Manager")
 
         if not self.constraints_validated():
-            self._sudo(None)
             return
 
         manager = self.get_manager()
         if not manager:
             LOG.error('action not kept: no manager')
-            self._sudo(None)
             return
+
+        self._sudo("Manager")
 
         useraction = self.wrapper_class(self)
         useraction.initialize()
@@ -137,6 +136,7 @@ class BaseHandler(object):
     def _sudo(self, role):
         """Give admin power to the current call"""
         #TODO: verify the call is emited from the bank server
+
         if role is not None:
             if self.mtool.getAuthenticatedMember().has_role(role):
                 return
