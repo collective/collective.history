@@ -63,7 +63,7 @@ class DxUserActionWrapper(BaseUserActionWrapper):
             if not oldName:
                 return False
             if not newName:
-                self.data["what"] = "deleted"
+                self.data["what"] = "removed"
         if self.what == "statechanged":
             if self.event.old_state == self.event.new_state:
                 return False

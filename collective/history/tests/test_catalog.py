@@ -28,7 +28,7 @@ class TestCatalog(base.IntegrationTestCase):
 
         acl_users = getToolByName(self.portal, 'acl_users')
         acl_users.userFolderAddUser('toto', 'password',
-                                    ['Member', 'Manager'], [])
+                                    ['Member', 'Contributor'], [])
         testing.login(self.portal, 'toto')
         self.portal.invokeFactory('Document',
                                   'test-document-2',
