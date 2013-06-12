@@ -56,7 +56,8 @@ class DexterityBackend(object):
             self._portal_types = getToolByName(self.context, "portal_types")
         self.isReady = True
         if self.catalog is None:
-            self.catalog = getToolByName(self.context, 'portal_history_catalog')
+            self.catalog = getToolByName(self.context,
+                                         'portal_history_catalog')
 
     def add(self, useraction_wrapper):
         if not self.isReady:
