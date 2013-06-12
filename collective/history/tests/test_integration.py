@@ -53,7 +53,7 @@ class TestIntegration(base.IntegrationTestCase):
         history = self.portal.portal_history.objectValues()
         self.assertEqual(len(history), 2)
         h2 = history[1]
-        self.assertEqual(h2.what, "deleted")
+        self.assertEqual(h2.what, "removed")
         self.assertEqual(type(h2.when), datetime.datetime)
         self.assertEqual(h2.who, testing.TEST_USER_ID)
         self.assertEqual(h2.where_path, '/plone/test-document')
@@ -69,7 +69,7 @@ class TestIntegration(base.IntegrationTestCase):
         history = self.portal.portal_history.objectValues()
         self.assertEqual(len(history), 2)
         h2 = history[1]
-        self.assertEqual(h2.what, "edited")
+        self.assertEqual(h2.what, "modified")
         self.assertEqual(type(h2.when), datetime.datetime)
         self.assertEqual(h2.who, testing.TEST_USER_ID)
         self.assertEqual(h2.where_path, '/plone/test-document')

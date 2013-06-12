@@ -37,7 +37,7 @@ class DxUserActionWrapper(BaseUserActionWrapper):
         elif IObjectMovedEvent.providedBy(self.event):
             return 'moved', self.get_object_moved_info()
         elif IObjectRemovedEvent.providedBy(self.event):
-            return 'deleted', self.get_object_moved_info()
+            return 'removed', self.get_object_moved_info()
         else:
             #TODO: provide a query component to let addon register things
             pass

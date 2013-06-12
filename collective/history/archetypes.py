@@ -31,7 +31,7 @@ class ArchetypesUserActionWrapper(BaseUserActionWrapper):
         if IObjectInitializedEvent.providedBy(self.event):
             return 'created', self.get_object_modified_info()
         elif IObjectEditedEvent.providedBy(self.event):
-            return 'edited', self.get_object_modified_info()
+            return 'modified', self.get_object_modified_info()
 #        #TODO: plone.app.iterate
 #        elif ICheckinEvent.providedBy(self.event):
 #            return 'checkedin'
@@ -54,7 +54,7 @@ class ArchetypesUserActionWrapper(BaseUserActionWrapper):
         elif IObjectMovedEvent.providedBy(self.event):
             return 'moved', self.get_object_moved_info()
         elif IObjectRemovedEvent.providedBy(self.event):
-            return 'deleted', self.get_object_moved_info()
+            return 'removed', self.get_object_moved_info()
         elif IObjectModifiedEvent.providedBy(self.event):
             return 'modified', self.get_object_modified_info()
         else:
