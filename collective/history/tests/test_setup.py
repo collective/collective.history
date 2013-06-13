@@ -36,6 +36,13 @@ class TestSetup(base.IntegrationTestCase):
         type_name = "collective.history.useraction"
         self.assertIn(type_name, addable)
 
+    def test_type_not_searched(self):
+        type_name = "collective.history.useraction"
+        properties = self.layer['portal'].portal_properties.site_properties
+        tns = properties.getProperty('types_not_searched')
+        self.assertIn(type_name, tns)
+        self.assertNotEqual(len(tns), 1)
+
 
 def test_suite():
     return unittest.defaultTestLoader.loadTestsFromName(__name__)
