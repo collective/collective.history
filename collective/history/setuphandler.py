@@ -26,7 +26,8 @@ def setupVarious(context):
 
 
 def updatePermissions(portal_history):
-    portal_history.manage_permission('View',
+    portal_history.manage_permission(
+        'View',
         roles=['Manager'],
         acquire=False
     )

@@ -1,4 +1,7 @@
-from zope.lifecycleevent.interfaces import IObjectAddedEvent, IObjectRemovedEvent
+from zope.lifecycleevent.interfaces import (
+    IObjectAddedEvent,
+    IObjectRemovedEvent,
+)
 from plone.app.discussion.comment import IComment
 from plone.uuid.interfaces import IUUID, IUUIDAware
 

@@ -159,4 +159,5 @@ class HandleConfigurationUserAction(BaseHandler):
 
     def __init__(self, event):
         self.context = event.context.context
-        super(HandleConfigurationUserAction, self).__init__(self.context, event)
+        super(HandleConfigurationUserAction, self).__init__(self.context,
+                                                            event)
