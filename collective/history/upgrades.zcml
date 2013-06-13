@@ -4,7 +4,7 @@
 
     <upgradeStep
         source="*"
-        destination="1003"
+        destination="1004"
         title="Upgrade"
         description=""
         profile="collective.history:default"
