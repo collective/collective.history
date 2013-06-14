@@ -1,6 +1,7 @@
 import DateTime
 import unittest2 as unittest
 from Products.CMFCore.utils import getToolByName
+from collective.history.manager import UserActionManager
 
 from collective.history.tests import base
 from plone.app import testing
@@ -37,10 +38,11 @@ class TestCatalog(base.IntegrationTestCase):
         d2.setCreationDate(DateTime.DateTime('1.25.2013'))
         d2.processForm()
 
-        self.catalog = self.layer['portal'].portal_history_catalog
+        self.manager = UserActionManager(self.portal, self.request)
+        self.manager.update()
 
     def test_what_index(self):
-        result = self.catalog.searchResults({'what': 'created'})
+        result = self.manager.search({'what': 'created'})
         self.assertEqual(len(result), 2)
         brain = result[0]
         try:
@@ -49,7 +51,7 @@ class TestCatalog(base.IntegrationTestCase):
             self.assertTrue(False, "getObject should work")
 
     def test_who_index(self):
-        result = self.catalog.searchResults({'who': 'toto'})
+        result = self.manager.search({'who': 'toto'})
 
         self.assertEqual(len(result), 1)
         try:

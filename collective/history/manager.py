@@ -61,3 +61,18 @@ class UserActionManager(BrowserView):
         if not self.backend:
             return
         return self.backend.add(useraction)
+
+    def rm(self, useraction_id):
+        if not self.backend:
+            return
+        return self.backend.rm(useraction_id)
+
+    def search(self, query):
+        if not self.backend:
+            return
+        return self.backend.search(query)
+
+    def get(self, useraction_id):
+        if not self.backend:
+            return
+        return self.backend.get(useraction_id)

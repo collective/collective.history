@@ -102,7 +102,7 @@ class DexterityBackend(object):
     def search(self, query):
         if not self.isReady:
             return []
-        return []
+        return self.catalog.searchResults(query)
 
     def get(self, useraction_id):
         if not self.isReady:
