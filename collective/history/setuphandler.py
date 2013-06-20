@@ -36,8 +36,10 @@ def updatePermissions(portal_history):
 def updateCatalog(obj):
     catalog = getToolByName(obj, 'portal_history_catalog')
     indexes = catalog.indexes()
-    if 'created' not in indexes:
-        catalog.addIndex('created', 'DateIndex')
+    metadatas = catalog.schema()
+
+    if 'when' not in indexes:
+        catalog.addIndex('when', 'DateIndex')
     if 'what' not in indexes:
         catalog.addIndex('what', 'FieldIndex')
     if 'on_what' not in indexes:
@@ -49,6 +51,8 @@ def updateCatalog(obj):
     if 'path' not in indexes:
         catalog.addIndex('path', 'ExtendedPathIndex',
                          extra={'indexed_attrs': 'getPhysicalPath'})
+    if 'where_path' not in metadatas:
+        catalog.addColumn('where_path')
 
 
 def updateHistoryContainer(obj):
