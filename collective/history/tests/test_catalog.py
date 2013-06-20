@@ -45,6 +45,7 @@ class TestCatalog(base.IntegrationTestCase):
         result = self.manager.search({'what': 'created'})
         self.assertEqual(len(result), 2)
         brain = result[0]
+        self.assertEqual(brain['where_path'], '/plone/test-document-2')
         try:
             brain.getObject()
         except:
