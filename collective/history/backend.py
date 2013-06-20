@@ -20,7 +20,7 @@ class IBackendStorage(interface.Interface):
     def rm(useraction_id):
         """delete the IUserAction with id"""
 
-    def search(query):
+    def search(**kwargs):
         """get all IUserAction which respect the criteria in the query"""
 
     def get(useraction_id):
@@ -98,10 +98,10 @@ class DexterityBackend(object):
             return
         self.container.manage_delObjects(ids=[useraction_id])
 
-    def search(self, query):
+    def search(self, **kwargs):
         if not self.isReady:
             return []
-        return self.catalog.searchResults(query)
+        return self.catalog.searchResults(**kwargs)
 
     def get(self, useraction_id):
         if not self.isReady:
