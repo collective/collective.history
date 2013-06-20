@@ -70,7 +70,6 @@ class DexterityBackend(object):
         action_ids = self.container.objectIds()
 
         if action_id in action_ids:
-            action_id += "-1"
             indice = 1
             while action_id + "-%s" % indice in action_ids:
                 indice += 1
