@@ -53,6 +53,8 @@ def updateCatalog(obj):
                          extra={'indexed_attrs': 'getPhysicalPath'})
     if 'where_path' not in metadatas:
         catalog.addColumn('where_path')
+    if 'when' not in metadatas:
+        catalog.addColumn('when')
 
 
 def updateHistoryContainer(obj):
