@@ -42,7 +42,7 @@ class TestCatalog(base.IntegrationTestCase):
         self.manager.update()
 
     def test_what_index(self):
-        result = self.manager.search({'what': 'created'})
+        result = self.manager.search(what={'query': 'created'})
         self.assertEqual(len(result), 2)
         brain = result[0]
         self.assertEqual(brain['where_path'], '/plone/test-document-2')
@@ -52,7 +52,7 @@ class TestCatalog(base.IntegrationTestCase):
             self.assertTrue(False, "getObject should work")
 
     def test_who_index(self):
-        result = self.manager.search({'who': 'toto'})
+        result = self.manager.search(who={'query': 'toto'})
 
         self.assertEqual(len(result), 1)
         try:
