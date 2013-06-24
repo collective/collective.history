@@ -44,10 +44,6 @@ class TestCatalog(base.IntegrationTestCase):
     def test_what_index(self):
         result = self.manager.search(what={'query': 'created'})
         self.assertEqual(len(result), 2)
-        brain = result[0]
-        self.assertEqual(brain['where_path'], '/plone/test-document')
-        brain = result[1]
-        self.assertEqual(brain['where_path'], '/plone/test-document-2')
         try:
             brain.getObject()
         except:
