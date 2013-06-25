@@ -44,6 +44,7 @@ class TestCatalog(base.IntegrationTestCase):
     def test_what_index(self):
         result = self.manager.search(what={'query': 'created'})
         self.assertEqual(len(result), 2)
+        brain = result[0]
         try:
             brain.getObject()
         except:
