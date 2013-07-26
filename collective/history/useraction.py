@@ -15,6 +15,7 @@ from plone.app.controlpanel.interfaces import IConfigurationChangedEvent,\
 from plone.registry.interfaces import IRecordModifiedEvent
 from Products.CMFPlone.interfaces.siteroot import IPloneSiteRoot
 
+from collective.history.adapter import IExtractWhat
 
 LOG = logging.getLogger("collective.history")
 
@@ -60,12 +61,10 @@ class BaseUserActionWrapper(object):
             if what is not None:
                 self.data["what"] = what
             else:
-                ifaces = list(interface.implementedBy(value.__class__))
-                for iface in ifaces:
-                    if iface.extends(IObjectEvent):
-                        iface_id = str(iface.__identifier__)
-                        self.data["what"] = iface_id
-                        break
+                extracts = component.queryAdapter(self.event, IExtractWhat)
+                what, what_info = extracts()
+                self.data["what"] = what
+                self.data["what_info"] = what_info
         elif type(value) == str:
             self.data["what"] = value
 
@@ -267,8 +266,8 @@ class BaseUserActionWrapper(object):
 
         title = "%s" % self.when.strftime("%Y-%m-%d")
         title += "-%s" % normalizer.normalize(self.who)
-        title += "-%s" % self.what.lower()
-        title += "-%s" % self.where_uid
+        title += "-%s" % normalizer.normalize(self.what.lower())
+        title += "-%s" % normalizer.normalize(self.where_uid)
 
         if type(title) == unicode:
             return title.encode("utf-8")

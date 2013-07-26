@@ -57,9 +57,6 @@ class ArchetypesUserActionWrapper(BaseUserActionWrapper):
             return 'removed', self.get_object_moved_info()
         elif IObjectModifiedEvent.providedBy(self.event):
             return 'modified', self.get_object_modified_info()
-        else:
-            #TODO: provide a query component to let addon register things
-            pass
         return None, {}
 
     def is_valid_event(self):

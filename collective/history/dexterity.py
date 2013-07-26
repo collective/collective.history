@@ -38,9 +38,6 @@ class DxUserActionWrapper(BaseUserActionWrapper):
             return 'moved', self.get_object_moved_info()
         elif IObjectRemovedEvent.providedBy(self.event):
             return 'removed', self.get_object_moved_info()
-        else:
-            #TODO: provide a query component to let addon register things
-            pass
         return None, {}
 
     def is_valid_event(self):
