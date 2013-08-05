@@ -61,7 +61,7 @@ class BaseUserActionWrapper(object):
             if what is not None:
                 self.data["what"] = what
             else:
-                extracts = component.queryAdapter(self.event, IExtractWhat)
+                extracts = component.getAdapter(self.event, IExtractWhat)
                 what, what_info = extracts()
                 self.data["what"] = what
                 self.data["what_info"] = what_info
