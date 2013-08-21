@@ -55,6 +55,8 @@ def updateCatalog(obj):
         catalog.addColumn('where_path')
     if 'when' not in metadatas:
         catalog.addColumn('when')
+    if 'what' not in metadatas:
+        catalog.addColumn('what')
 
 
 def updateHistoryContainer(obj):
