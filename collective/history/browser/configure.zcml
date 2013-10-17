@@ -13,7 +13,8 @@
     <browser:page
         name="collective_history_view"
         for="*"
-        template="collective_history_view.pt"
+        class=".history_view.HistoryView"
+        template="history_view.pt"
         permission="zope2.View"
         />
 

@@ -73,6 +73,12 @@
       class=".backend.DexterityBackend"
       permission="zope.Public"
       />
+  <browser:page
+      name="collective.history.backend.sqlite"
+      for="*"
+      class=".backend_sqlite.SQLiteBackend"
+      permission="zope.Public"
+      />
 
   <adapter factory=".adapter.ExtractWhat" />
 

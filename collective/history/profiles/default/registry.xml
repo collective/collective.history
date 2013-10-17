@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<registry>
+  <record name="collective.history.backend">
+    <field type="plone.registry.field.ASCIILine"/>
+    <value>collective.history.backend.dexterity</value>
+  </record>
+</registry>

@@ -30,9 +30,9 @@
         </tr>
       </thead>
       <tbody>
-      <tal:def tal:repeat="brain context/getFolderContents">
-        <tr tal:define="useraction brain/getObject">
-          <td tal:content="python:useraction.when.strftime('%Y-%m-%d %H:%M:%S')"></td>
+      <tal:def tal:repeat="useraction view/get_useractions">
+        <tr>
+          <td tal:content="useraction/when"></td>
           <td tal:content="useraction/what"></td>
           <td tal:content="useraction/on_what"></td>
           <td>
