@@ -1,9 +1,6 @@
 language: python
 python: 2.7
-env:
-  - TARGET=test
-  - TARGET=coverage.sh
-  - TARGET=python-validation.sh
+
 install:
   - sudo apt-get -qq install libfreetype6-dev liblcms1-dev libwebp-dev
   - mkdir -p buildout-cache/eggs
@@ -15,7 +12,12 @@ before_script:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
 script:
-  - bin/$TARGET
+  - bin/test
 after_success:
+  - bin/coverage.sh
   - pip install coveralls
   - coveralls
+after_failure:
+  - bin/buildout annotate -c travis.cfg
+#  - gem install travis-artifacts -q
+#  - travis-artifacts upload --path parts/test

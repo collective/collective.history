@@ -3,7 +3,6 @@ import json
 from datetime import datetime
 
 from zope import component
-from zope import interface
 from zope import schema
 from zope.component.interfaces import IObjectEvent
 
