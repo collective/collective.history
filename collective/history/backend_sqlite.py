@@ -1,8 +1,10 @@
+import datetime
 import json
 import os
 import sqlite3
 import logging
-
+from collective.history.useraction import IUserAction
+from zope import interface
 
 LOG = logging.getLogger("collective.history")
 DB_PATH_ENV = 'collective_history_sqlite'
@@ -16,6 +18,34 @@ def dict_factory(cursor, row):
     for idx, col in enumerate(cursor.description):
         d[col[0]] = row[idx]
     return d
+
+
+def date_to_int(date):
+    integer = int(date.strftime(DATEF))
+    return integer
+
+
+def int_to_date(integer):
+    s = str(integer)
+    return datetime.datetime.strptime(s, DATEF)
+
+
+class UserAction(object):
+    interface.implements(IUserAction)
+    def __init__(self, original):
+        self.what = original['what']
+        self.what_info = original['what_info']
+        self.on_what = original['on_what']
+        when = original['when']
+        if type(when) != datetime.datetime:
+            self.when = int_to_date(when)
+        else:
+            self.when = when
+        self.where_uri = original['where_uri']
+        self.where_uid = original['where_uid']
+        self.where_path = original['where_path']
+        self.who = original['who']
+        self.id = original['id']
 
 
 class SQLiteBackend(object):
@@ -48,8 +78,6 @@ class SQLiteBackend(object):
             uw.where_path,
             uw.who
         ]
-        LOG.info(REQUEST)
-        LOG.info(VALUES)
         try:
             self.db.execute(REQUEST, VALUES)
         except sqlite3.IntegrityError as e:
@@ -75,15 +103,14 @@ class SQLiteBackend(object):
         #    'query': DateTime(lastCheck),
         #    'range': 'min'
         #}
-        LOG.info('search')
         if 'when' in kwargs:
             when = kwargs['when']
             value = None
             operator = "="
             if 'query' in when:
-                value = int(when['query'].strftime(DATEF))
+                value = date_to_int(when['query'])
             else:
-                value = int(when.strftime(DATEF))
+                value = date_to_int(when)
             if 'range' in when:
                 r = when['range']
                 if r == 'min':
@@ -93,17 +120,20 @@ class SQLiteBackend(object):
             WHERE.append("`when` %s ?" % operator)
             VALUES.append(value)
         if WHERE:
-            QUERY += "WHERE %s" % (" AND ".join(WHERE))
-        results = self.db.execute(QUERY).fetchall()
+            QUERY += " WHERE %s" % (" AND ".join(WHERE))
+        results = self.db.execute(QUERY, VALUES).fetchall()
+        updated = []
+        for info in results:
+            updated.append(UserAction(info))
         self._closedb()
-        return results
+        return updated
 
     def get(self, useraction_id):
         if not self.isReady:
             return
-        LOG.info('get %s' % useraction_id)
         QUERY = "SELECT %s FROM history WHERE `id` = ?" % COLUMNS
-        return self.db.excecute(QUERY, [useraction_id]).fetchall()
+        result = self.db.excecute(QUERY, [useraction_id]).fetchone()
+        return UserAction(result)
 
     def _initdb(self):
         if self.db is not None:
