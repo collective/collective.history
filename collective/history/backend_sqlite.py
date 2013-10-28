@@ -114,9 +114,9 @@ class SQLiteBackend(object):
             if 'range' in when:
                 r = when['range']
                 if r == 'min':
-                    operator = "<"
-                elif r == 'max':
                     operator = ">"
+                elif r == 'max':
+                    operator = "<"
             WHERE.append("`when` %s ?" % operator)
             VALUES.append(value)
         if WHERE:
