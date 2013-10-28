@@ -43,7 +43,7 @@ class UserAction(object):
             self.when = when
         self.where_uri = original['where_uri']
         self.where_uid = original['where_uid']
-        self.where_path = original['where_path']
+        self.where_path = str(original['where_path'])
         self.who = original['who']
         self.id = original['id']
 
@@ -131,8 +131,10 @@ class SQLiteBackend(object):
     def get(self, useraction_id):
         if not self.isReady:
             return
+        self._initdb()
         QUERY = "SELECT %s FROM history WHERE `id` = ?" % COLUMNS
-        result = self.db.excecute(QUERY, [useraction_id]).fetchone()
+        result = self.db.execute(QUERY, [useraction_id]).fetchone()
+        self._closedb()
         return UserAction(result)
 
     def _initdb(self):
