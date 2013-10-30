@@ -34,7 +34,7 @@ class UserAction(object):
     interface.implements(IUserAction)
     def __init__(self, original):
         self.what = original['what']
-        self.what_info = original['what_info']
+        self.what_info = json.loads(original['what_info'])
         self.on_what = original['on_what']
         when = original['when']
         if type(when) != datetime.datetime:
