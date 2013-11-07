@@ -43,7 +43,7 @@ class BaseHandler(object):
         self._mtool = None
         self._pstate = None
         if self.mtool is None:
-            LOG.info("action not kept: context is not content")
+            LOG.debug("action not kept: context is not content")
             return
         self._security_manager = getSecurityManager()
 
@@ -52,7 +52,7 @@ class BaseHandler(object):
 
         manager = self.get_manager()
         if not manager:
-            LOG.error('action not kept: no manager')
+            LOG.debug('action not kept: no manager')
             return
 
         self._sudo("Manager")
@@ -63,8 +63,8 @@ class BaseHandler(object):
         if useraction.is_valid_event():
             manager.add(useraction)
         else:
-            LOG.info('action not kept: is not a valid event')
-            LOG.info(event)
+            LOG.debug('action not kept: is not a valid event')
+            LOG.debug(event)
             #del useraction.context
         self._sudo(None)
 
@@ -80,13 +80,13 @@ class BaseHandler(object):
 
     def constraints_validated(self):
         if self._is_temporary():
-            LOG.info('action not kept: is temporary')
+            LOG.debug('action not kept: is temporary')
             return False
         if self._is_history():
-            LOG.info('action not kept: is history')
+            LOG.debug('action not kept: is history')
             return False
         if not self._is_installed():
-            LOG.info('action not kept: not installed')
+            LOG.debug('action not kept: not installed')
             return False
         return True
 
