@@ -32,6 +32,7 @@ def int_to_date(integer):
 
 class UserAction(object):
     interface.implements(IUserAction)
+
     def __init__(self, original):
         self.what = original['what']
         self.what_info = json.loads(original['what_info'])
