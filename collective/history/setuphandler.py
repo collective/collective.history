@@ -51,12 +51,10 @@ def updateCatalog(obj):
     if 'path' not in indexes:
         catalog.addIndex('path', 'ExtendedPathIndex',
                          extra={'indexed_attrs': 'getPhysicalPath'})
-    if 'where_path' not in metadatas:
-        catalog.addColumn('where_path')
-    if 'when' not in metadatas:
-        catalog.addColumn('when')
-    if 'what' not in metadatas:
-        catalog.addColumn('what')
+    COLUMNS = ('where_path', 'when', 'what', 'on_what', 'where_uri', 'where_uid')
+    for column in COLUMNS:
+        if column not in metadatas:
+            catalog.addColumn(column)
 
 
 def updateHistoryContainer(obj):

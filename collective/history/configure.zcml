@@ -80,6 +80,4 @@
       permission="zope.Public"
       />
 
-  <adapter factory=".adapter.ExtractWhat" />
-
 </configure>

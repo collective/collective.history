@@ -4,6 +4,7 @@ from datetime import datetime
 
 from zope import component
 from zope import schema
+from zope import interface
 from zope.component.interfaces import IObjectEvent
 
 from plone.directives import form
@@ -14,7 +15,7 @@ from plone.app.controlpanel.interfaces import IConfigurationChangedEvent,\
 from plone.registry.interfaces import IRecordModifiedEvent
 from Products.CMFPlone.interfaces.siteroot import IPloneSiteRoot
 
-from collective.history.adapter import IExtractWhat
+from collective.history.extract import IExtractWhat
 
 LOG = logging.getLogger("collective.history")
 
@@ -60,8 +61,7 @@ class BaseUserActionWrapper(object):
             if what is not None:
                 self.data["what"] = what
             else:
-                extracts = component.getAdapter(self.event, IExtractWhat)
-                what, what_info = extracts()
+                what, what_info = self._extracts(value)
                 self.data["what"] = what
                 self.data["what_info"] = what_info
         elif type(value) == str:
@@ -71,6 +71,17 @@ class BaseUserActionWrapper(object):
         return self.data.get("what", None)
 
     what = property(get_what, set_what)
+
+    def _extracts(self, value):
+        extractor = component.queryAdapter(value, IExtractWhat, None)
+        if extractor is not None:
+            return extractor()
+        ifaces = list(interface.implementedBy(value.__class__))
+        for iface in ifaces:
+            if iface.extends(IObjectEvent):
+                iface_id = str(iface.__identifier__)
+                return iface_id, {}
+        return None, {}
 
     def set_what_info(self, value):
         if type(value) == dict:
