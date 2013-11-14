@@ -73,7 +73,7 @@ class BaseUserActionWrapper(object):
     what = property(get_what, set_what)
 
     def _extracts(self, value):
-        extractor = component.queryAdapter(value, IExtractWhat, None)
+        extractor = component.queryAdapter(value, IExtractWhat)
         if extractor is not None:
             return extractor()
         ifaces = list(interface.implementedBy(value.__class__))
