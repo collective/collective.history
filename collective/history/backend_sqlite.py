@@ -10,7 +10,8 @@ LOG = logging.getLogger("collective.history")
 DB_PATH_ENV = 'collective_history_sqlite'
 DB_PATH = os.environ.get(DB_PATH_ENV)
 DATEF = '%Y%m%d%H%M%S'
-COLUMNS = "`id`,  `what`, `on_what`, `what_info`, `when`, `where_uri`, `where_uid`, `where_path`, `who`"
+COLUMNS = ("`id`,  `what`, `on_what`, `what_info`, `when`, `where_uri`, "
+           "`where_uid`, `where_path`, `who`")
 
 
 def dict_factory(cursor, row):
@@ -105,19 +106,7 @@ class SQLiteBackend(object):
         #    'range': 'min'
         #}
         if 'when' in kwargs:
-            when = kwargs['when']
-            value = None
-            operator = "="
-            if 'query' in when:
-                value = date_to_int(when['query'])
-            else:
-                value = date_to_int(when)
-            if 'range' in when:
-                r = when['range']
-                if r == 'min':
-                    operator = ">"
-                elif r == 'max':
-                    operator = "<"
+            operator, value = self._searchWhen(**kwargs)
             WHERE.append("`when` %s ?" % operator)
             VALUES.append(value)
         if WHERE:
@@ -128,6 +117,22 @@ class SQLiteBackend(object):
             updated.append(UserAction(info))
         self._closedb()
         return updated
+
+    def _searchWhen(self, **kwargs):
+        when = kwargs['when']
+        value = None
+        operator = "="
+        if 'query' in when:
+            value = date_to_int(when['query'])
+        else:
+            value = date_to_int(when)
+        if 'range' in when:
+            r = when['range']
+            if r == 'min':
+                operator = ">"
+            elif r == 'max':
+                operator = "<"
+        return (operator, value)
 
     def get(self, useraction_id):
         if not self.isReady:

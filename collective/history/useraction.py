@@ -202,6 +202,11 @@ class BaseUserActionWrapper(object):
                 new_uid = '/'.join(newParent.getPhysicalPath())
         else:
             new_uid = None
+        info = self._get_object_moved_info(old_uid, new_uid)
+        if info:
+            return json.dumps(info)
+
+    def _get_object_moved_info(self, old_uid, new_uid):
         info = {}
         if old_uid:
             info["oldParent"] = old_uid
@@ -211,8 +216,7 @@ class BaseUserActionWrapper(object):
             info["newParent"] = new_uid
         if self.event.newName:
             info["newName"] = self.event.newName
-        if info:
-            return json.dumps(info)
+        return info
 
     def get_configuration_changed_info(self):
         if self.event.data:
