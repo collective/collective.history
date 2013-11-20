@@ -4,4 +4,4 @@ omit =
     parts/*
     eggs/*
     */test*
-
+    src/*
