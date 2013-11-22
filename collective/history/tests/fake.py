@@ -48,3 +48,8 @@ class FakeMTool(object):
 
     def getAuthenticatedMember(self):
         return self.member
+
+
+class FakeCursor(object):
+    def __init__(self):
+        self.description = (("id",), ("what",))
