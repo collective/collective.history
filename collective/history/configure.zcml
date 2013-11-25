@@ -6,10 +6,12 @@
     xmlns:i18n="http://namespaces.zope.org/i18n"
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     xmlns:plone="http://namespaces.plone.org/plone"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
     i18n_domain="collective.history">
 
   <includeDependencies package="."/>
   <include package=".browser" />
+  <include package="souper.plone" />
 
   <i18n:registerTranslations directory="locales" />
 
@@ -77,6 +79,12 @@
       name="collective.history.backend.sqlite"
       for="*"
       class=".backend_sqlite.SQLiteBackend"
+      permission="zope.Public"
+      />
+  <browser:page zcml:condition="installed souper.plone"
+      name="collective.history.backend.souper"
+      for="*"
+      class=".backend_souper.SouperBackend"
       permission="zope.Public"
       />
 

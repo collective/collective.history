@@ -37,6 +37,7 @@ setup(name='collective.history',
           'plone.app.dexterity',
           'plone.directives.form',
           'collective.js.datatables',
+          'souper.plone',
           # -*- Extra requirements: -*-
       ],
       extras_require=dict(

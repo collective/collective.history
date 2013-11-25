@@ -3,5 +3,6 @@
   <version>1004</version>
   <dependencies>
     <dependency>profile-collective.js.datatables:default</dependency>
+    <dependency>profile-souper.plone:default</dependency>
   </dependencies>
 </metadata>
