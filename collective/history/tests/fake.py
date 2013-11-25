@@ -61,7 +61,7 @@ class FakeUserAction(object):
         self.id = "foo-bar"
         self.what = "edit"
         self.on_what = "Document"
-        self.what_info = {"foo":"bar"}
+        self.what_info = {"foo": "bar"}
         self.when = datetime.now()
         self.where_uri = "http://example.com/foo/bar/@@view"
         self.where_uid = "UID1234"

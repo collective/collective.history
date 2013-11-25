@@ -1,16 +1,16 @@
 import datetime
 import unittest2 as unittest
 from collective.history.tests import base, fake
-from collective.history.useraction import BaseUserActionWrapper
+from collective.history.dexterity import DxUserActionWrapper
 
 
-class TestBaseUserAction(base.UnitTestCase):
+class TestDexterityUserAction(base.UnitTestCase):
     """We tests the setup (install) of the addons. You should check all
     stuff in profile are well activated (browserlayer, js, content types, ...)
     """
     def setUp(self):
         base.UnitTestCase.setUp(self)
-        self.useraction = BaseUserActionWrapper(fake.FakeHandler())
+        self.useraction = DxUserActionWrapper(fake.FakeHandler())
 
     def test_initialize(self):
         self.assertIsNone(self.useraction.event)

@@ -1,11 +1,8 @@
 from datetime import datetime, timedelta
 import unittest2 as unittest
-from Products.CMFCore.utils import getToolByName
-from collective.history.manager import UserActionManager
 
 from collective.history.tests import base, fake
 from collective.history import backend_sqlite
-from plone.app import testing
 
 
 class TestSQLiteBackend(base.UnitTestCase):
@@ -57,7 +54,7 @@ class TestSQLiteBackend(base.UnitTestCase):
         self.assertEqual(useraction.id, "id_value")
 
     def test_backend_add(self):
-        now = datetime.now() - timedelta(seconds=1)  #delay to let sql
+        now = datetime.now() - timedelta(seconds=1)  # delay to let sql
         yesterday = datetime.now() - timedelta(days=1)
         tomorrow = datetime.now() + timedelta(days=1)
 
