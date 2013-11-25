@@ -1,0 +1,9 @@
+[run]
+source = collective.history
+[report]
+omit =
+    extras/*
+    buildout-cache/eggs/*
+    parts/*
+    eggs/*
+    */test*
