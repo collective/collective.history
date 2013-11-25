@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import unittest2 as unittest
 from Products.CMFCore.utils import getToolByName
 from collective.history.manager import UserActionManager
@@ -9,6 +9,7 @@ from plone.app import testing
 
 
 class TestSQLiteBackend(base.UnitTestCase):
+
     def test_dict_factory(self):
         dict_factory = backend_sqlite.dict_factory
         cursor = fake.FakeCursor()
@@ -54,6 +55,56 @@ class TestSQLiteBackend(base.UnitTestCase):
         self.assertEqual(useraction.where_path, '/foo/bar')
         self.assertEqual(useraction.who, "me")
         self.assertEqual(useraction.id, "id_value")
+
+    def test_backend_add(self):
+        now = datetime.now() - timedelta(seconds=1)  #delay to let sql
+        yesterday = datetime.now() - timedelta(days=1)
+        tomorrow = datetime.now() + timedelta(days=1)
+
+        backend = backend_sqlite.SQLiteBackend(None, None)
+        backend.db_path = ":memory:"
+        backend.update()
+        self.assertTrue(backend.isReady)
+        self.assertIsNone(backend.db)
+        backend._initdb()
+        self.assertIsNotNone(backend.db)
+        backend._closedb()
+        self.assertIsNone(backend.db)
+
+        backend._should_closedb = False
+        useraction = fake.FakeUserAction()
+        useraction.id = 'foo-bar-1'
+        backend.add(useraction)
+
+        history = backend.search()
+        self.assertEqual(len(history), 1)
+
+        useraction2 = fake.FakeUserAction()
+        useraction2.id = 'foo-bar-2'
+        useraction2.when = yesterday
+        backend.add(useraction2)
+        useraction3 = fake.FakeUserAction()
+        useraction3.when = tomorrow
+        useraction3.id = 'foo-bar-3'
+        backend.add(useraction3)
+
+        history = backend.search()
+        self.assertEqual(len(history), 3)
+
+        when = {"query": now, "range": "min"}
+        history = backend.search(when=when)
+        self.assertEqual(len(history), 2)
+        self.assertEqual(history[0].id, 'foo-bar-3')
+        self.assertEqual(history[1].id, 'foo-bar-1')
+
+        when = {"query": now, "range": "max"}
+        history = backend.search(when=when)
+        self.assertEqual(len(history), 1)
+        self.assertEqual(history[0].id, 'foo-bar-2')
+
+        backend.rm("foo-bar-1")
+        history = backend.search()
+        self.assertEqual(len(history), 2)
 
 
 def test_suite():

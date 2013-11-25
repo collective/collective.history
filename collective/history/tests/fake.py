@@ -1,3 +1,4 @@
+from datetime import datetime
 from zope import interface
 from zope.component.interfaces import IObjectEvent
 
@@ -53,3 +54,17 @@ class FakeMTool(object):
 class FakeCursor(object):
     def __init__(self):
         self.description = (("id",), ("what",))
+
+
+class FakeUserAction(object):
+    def __init__(self):
+        self.id = "foo-bar"
+        self.what = "edit"
+        self.on_what = "Document"
+        self.what_info = {"foo":"bar"}
+        self.when = datetime.now()
+        self.where_uri = "http://example.com/foo/bar/@@view"
+        self.where_uid = "UID1234"
+        self.where_path = "/foo/bar"
+        self.who = "me"
+        self.transactionid = None

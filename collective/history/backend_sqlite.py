@@ -58,6 +58,7 @@ class SQLiteBackend(object):
         self.isReady = False
         self.db_path = DB_PATH
         self.db = None
+        self._should_closedb = True
 
     def update(self):
         self.isReady = True
@@ -65,11 +66,10 @@ class SQLiteBackend(object):
     def add(self, useraction_wrapper):
         if not self.isReady:
             return
-        self._initdb()
         uw = useraction_wrapper
-        REQUEST = """INSERT INTO history (%s)
+        query = """INSERT INTO history (%s)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""" % COLUMNS
-        VALUES = [
+        values = [
             uw.id,
             uw.what,
             uw.on_what,
@@ -80,42 +80,35 @@ class SQLiteBackend(object):
             uw.where_path,
             uw.who
         ]
-        try:
-            self.db.execute(REQUEST, VALUES)
-        except sqlite3.IntegrityError as e:
-            LOG.error(e)
-        self._closedb()
+        self._querydb(query, values)
 
     def rm(self, useraction_id):
         if not self.isReady:
             return
-        self._initdb()
-        REQUEST = """DELETE FROM history WHERE id=?"""
-        self.db.execute(REQUEST, [useraction_id])
-        self._closedb()
+        query = """DELETE FROM history WHERE id=?"""
+        self._querydb(query, [useraction_id])
 
     def search(self, **kwargs):
         if not self.isReady:
             return []
-        self._initdb()
-        QUERY = "SELECT %s FROM history" % COLUMNS
-        WHERE = []
-        VALUES = []
+        query = "SELECT %s FROM history" % COLUMNS
+        where = []
+        values = []
         #when={
         #    'query': DateTime(lastCheck),
         #    'range': 'min'
         #}
         if 'when' in kwargs:
             operator, value = self._searchWhen(**kwargs)
-            WHERE.append("`when` %s ?" % operator)
-            VALUES.append(value)
-        if WHERE:
-            QUERY += " WHERE %s" % (" AND ".join(WHERE))
-        results = self.db.execute(QUERY, VALUES).fetchall()
+            where.append("`when` %s ?" % operator)
+            values.append(value)
+        if where:
+            query += " where %s" % (" AND ".join(where))
+        query += " ORDER BY `when` DESC"
+        results = self._querydb(query, values).fetchall()
         updated = []
         for info in results:
             updated.append(UserAction(info))
-        self._closedb()
         return updated
 
     def _searchWhen(self, **kwargs):
@@ -167,8 +160,17 @@ class SQLiteBackend(object):
         )
 
     def _closedb(self):
-        if self.db is None:
+        if self.db is None or not self._should_closedb:
             return
+        self._db_close = True
         self.db.commit()
         self.db.close()
         self.db = None
+
+    def _querydb(self, query, values):
+        self._initdb()
+        try:
+            return self.db.execute(query, values)
+        except sqlite3.IntegrityError as e:
+            LOG.error(e)
+        self._closedb()
