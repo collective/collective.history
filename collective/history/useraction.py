@@ -278,7 +278,7 @@ class BaseUserActionWrapper(object):
     def title(self):
         normalizer = component.getUtility(IIDNormalizer)
 
-        title = "%s" % self.when.strftime("%Y-%m-%d-%H-%M-%S")
+        title = "%s" % self.when.strftime("%Y-%m-%d-%H-%M-%S-%f")
         title += "-%s" % normalizer.normalize(self.who)
         title += "-%s" % normalizer.normalize(self.what.lower())
         title += "-%s" % normalizer.normalize(self.where_uid)
