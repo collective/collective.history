@@ -170,7 +170,8 @@ class SQLiteBackend(object):
     def _querydb(self, query, values):
         self._initdb()
         try:
-            return self.db.execute(query, values)
+            ret = self.db.execute(query, values)
         except sqlite3.IntegrityError as e:
             LOG.error(e)
         self._closedb()
+        return ret
