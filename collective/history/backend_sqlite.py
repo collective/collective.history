@@ -105,7 +105,8 @@ class SQLiteBackend(object):
         if where:
             query += " where %s" % (" AND ".join(where))
         query += " ORDER BY `when` DESC"
-        results = self._querydb(query, values).fetchall()
+        results = self._querydb(query, values, False).fetchall()
+        self._closedb()
         updated = []
         for info in results:
             updated.append(UserAction(info))
@@ -132,7 +133,7 @@ class SQLiteBackend(object):
             return
         self._initdb()
         QUERY = "SELECT %s FROM history WHERE `id` = ?" % COLUMNS
-        result = self.db.execute(QUERY, [useraction_id]).fetchone()
+        result = self._querydb(QUERY, [useraction_id], False).fetchone()
         self._closedb()
         return UserAction(result)
 
@@ -167,11 +168,12 @@ class SQLiteBackend(object):
         self.db.close()
         self.db = None
 
-    def _querydb(self, query, values):
+    def _querydb(self, query, values, close=True):
         self._initdb()
         try:
             ret = self.db.execute(query, values)
         except sqlite3.IntegrityError as e:
             LOG.error(e)
-        self._closedb()
+        if close:
+            self._closedb()
         return ret
