@@ -32,6 +32,10 @@ class FakeEvent(object):
 
     def __init__(self):
         self.object = FakeContext()
+        self.oldName = None
+        self.newName = None
+        self.old_state = None
+        self.new_state = None
 
 
 class FakeHandler(object):

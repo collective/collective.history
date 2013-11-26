@@ -127,6 +127,7 @@ class TestDexterityUserAction(base.UnitTestCase):
         #copied, moved, removed must be tested in integration
 
     def test_is_valid_event(self):
+        self.useraction.initialize()
         #blacklisted event
         self.useraction.what = 'OFS.interfaces.IObjectWillBeRemovedEvent'
         self.assertFalse(self.useraction.is_valid_event())
