@@ -12,9 +12,14 @@ class FakeContext(object):
         self.physical_path = ('', 'Plone', 'foo')
         self.REQUEST = FakeRequest()
         self.REQUEST.ACTUAL_URL += '/Plone/foo/edit'
+        self.__parent__ = self
+        self.__name__ = "name"
 
     def getPhysicalPath(self):
         return self.physical_path
+
+    def absolute_url(self):
+        return 'http://nohost' + '/'.join(self.physical_path)
 
 
 class FakeRequest(object):
@@ -68,3 +73,13 @@ class FakeUserAction(object):
         self.where_path = "/foo/bar"
         self.who = "me"
         self.transactionid = None
+
+
+class FakeWorkflow():
+    def __init__(self, id):
+        self.id = id
+
+
+class FakeState():
+    def __init__(self, id):
+        self.id = id

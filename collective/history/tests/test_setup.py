@@ -43,6 +43,10 @@ class TestSetup(base.IntegrationTestCase):
         self.assertIn(type_name, tns)
         self.assertNotEqual(len(tns), 1)
 
+    def test_i18n(self):
+        from collective.history import i18n
+        self.assertTrue(hasattr(i18n, '_'))
+
 
 def test_suite():
     return unittest.defaultTestLoader.loadTestsFromName(__name__)
