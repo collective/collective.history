@@ -59,22 +59,24 @@ Thumbs.db
 *.zpt.py
 *.html.py
 *.egg
-.mr.developer.cfg
-.installed.cfg
+/.mr.developer.cfg
+/.installed.cfg
 
 # Eclipse pydev related #
 #########################
-.project
-.pydevproject
-.settings
+/.project
+/.pydevproject
+/.settings
 
 # Buildout generated folders #
 ##############################
-bin
-parts
-develop-eggs
-var
-src
-coverage
+/bin
+/parts
+/develop-eggs
+/var
+/src
+/coverage
+/lib
+/include
 
 omelette.cfg
